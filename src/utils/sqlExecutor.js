@@ -17,19 +17,22 @@ async function executeSQLFile(filePath) {
     const databaseExists = await connection.query(`SHOW DATABASES LIKE 'QuaDev'`);
     if (databaseExists[0].length === 0) {
       await connection.query('CREATE DATABASE QuaDev');
+      console.log('Database QuaDev created.');
+      
+      // Utiliser la base de données et exécuter le script SQL
+      await connection.query('USE QuaDev');
+      await connection.query(sql);
+      console.log(`SQL script from '${filePath}' executed successfully.`);
+    } else {
+      console.log('Database QuaDev already exists, skipping creation and SQL execution.');
     }
 
-    // Utiliser la base de données
-    await connection.query('USE QuaDev');
-    
-    // Exécuter les requêtes SQL
-    await connection.query(sql);
-    console.log(`SQL script from '${filePath}' executed successfully.`);
   } catch (error) {
     console.error(`Error executing SQL script from '${filePath}':`, error);
   } finally {
     await connection.end();
   }
 }
+
 
 module.exports = { executeSQLFile };

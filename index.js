@@ -1,6 +1,7 @@
 const { executeSQLFile } = require('./src/utils/sqlExecutor');
 const { sequelize } = require('./src/Models/model');
 const path = require('path');  // Utilisation de path pour gérer les chemins de fichiers
+const { testRelations } = require('./src/data/dataInsert');  // Importer la fonction testRelations
 
 // Fonction pour synchroniser Sequelize avec la base de données
 async function syncSequelize() {
@@ -24,6 +25,8 @@ async function syncSequelize() {
     // Exécuter le fichier SQL
     await executeSQLFile(sqlFilePath);
     await syncSequelize();
+     // Tester les relations et insérer des données
+    await testRelations();  // Appeler la fonction testRelations pour insérer les données et tester les relations
   } catch (error) {
     console.error('Error during initialization:', error);
   }
