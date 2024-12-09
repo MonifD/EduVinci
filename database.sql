@@ -27,6 +27,7 @@ CREATE TABLE Eleve (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(255) NOT NULL,
     prenom VARCHAR(255) NOT NULL,
+    annee_naissance YEAR NOT NULL,
     fk_classe INT NOT NULL,
     fk_annee INT NOT NULL,
     redouble BOOLEAN NOT NULL,
