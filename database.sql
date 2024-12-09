@@ -35,6 +35,16 @@ CREATE TABLE Eleve (
     FOREIGN KEY (fk_annee) REFERENCES Annee(id)
 );
 
+CREATE TABLE Archive (
+  id INT AUTO_INCREMENT PRIMARY KEY, -- Identifiant unique de l'archive
+  fk_eleve INT NOT NULL, -- Référence vers l'élève
+  fk_classe INT NOT NULL, -- Référence vers la classe
+  fk_annee INT NOT NULL, -- Référence vers l'année scolaire
+  FOREIGN KEY (fk_eleve) REFERENCES Eleve(id),
+  FOREIGN KEY (fk_classe) REFERENCES Classe(id),
+  FOREIGN KEY (fk_annee) REFERENCES Annee(id)
+);
+
 CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';
 GRANT ALL PRIVILEGES ON QuaDav.* TO 'admin'@'localhost';
 FLUSH PRIVILEGES;
