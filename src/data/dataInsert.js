@@ -1,4 +1,4 @@
-const { Professeur, Salle, Classe, Eleve, Annee } = require('../Models/model'); // Import des modèles nécessaires
+const { sequelize, Professeur, Salle, Classe, Eleve, Annee } = require('../Models/model'); // Import des modèles nécessaires
 
 // Fonction de test des relations et insertion de données
 async function testRelations() {
@@ -35,10 +35,10 @@ async function testRelations() {
       ]
     });
 
-    console.log(eleveDetails.toJSON());  // Afficher les détails de l'élève avec les relations
-
+    console.log('Élève inséré avec relations :', eleveDetails.toJSON());
   } catch (error) {
     console.error('Error during relation test:', error);
+    throw error; // Relancer l'erreur si nécessaire
   }
 }
 
