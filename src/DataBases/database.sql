@@ -49,5 +49,5 @@ CREATE TABLE Archive (
 
 -- Créer un utilisateur et lui accorder les privilèges nécessaires
 CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';
-GRANT ALL PRIVILEGES ON QuaDav.* TO 'admin'@'localhost';
+GRANT ALL PRIVILEGES ON QuaDev.* TO 'admin'@'localhost';
 FLUSH PRIVILEGES;
