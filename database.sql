@@ -36,14 +36,16 @@ CREATE TABLE Eleve (
 );
 
 CREATE TABLE Archive (
-  id INT AUTO_INCREMENT PRIMARY KEY, -- Identifiant unique de l'archive
-  fk_eleve INT NOT NULL, -- Référence vers l'élève
-  fk_classe INT NOT NULL, -- Référence vers la classe
-  fk_annee INT NOT NULL, -- Référence vers l'année scolaire
-  FOREIGN KEY (fk_eleve) REFERENCES Eleve(id),
-  FOREIGN KEY (fk_classe) REFERENCES Classe(id),
-  FOREIGN KEY (fk_annee) REFERENCES Annee(id)
+    id INT AUTO_INCREMENT PRIMARY KEY, -- Identifiant unique de l'archive
+    nom VARCHAR(255) NOT NULL, -- Nom de l'élève
+    prenom VARCHAR(255) NOT NULL, -- Prénom de l'élève
+    annee_naissance YEAR NOT NULL, -- Année de naissance de l'élève
+    annee_cours VARCHAR(255) NOT NULL, -- Année en cours (libellé)
+    classe VARCHAR(255) NOT NULL, -- Classe de l'élève
+    professeur VARCHAR(255) NOT NULL, -- Professeur responsable
+    passe BOOLEAN NOT NULL -- Indique si l'élève a passé l'année
 );
+
 
 CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';
 GRANT ALL PRIVILEGES ON QuaDav.* TO 'admin'@'localhost';

@@ -108,18 +108,34 @@ const Archive = sequelize.define('Archive', {
     autoIncrement: true,
     primaryKey: true,
   },
-  fk_eleve: {
+  nom: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  prenom: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  annee_naissance: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  fk_classe: {
-    type: DataTypes.INTEGER,
+  annee_cours: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
-  fk_annee: {
-    type: DataTypes.INTEGER,
+  classe: {
+    type: DataTypes.STRING,
     allowNull: false,
-  }
+  },
+  professeur: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  passe: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+  },
 });
 
 // Associations
@@ -127,9 +143,6 @@ Classe.belongsTo(Professeur, { foreignKey: 'fk_prof' });
 Classe.belongsTo(Salle, { foreignKey: 'fk_salle' });
 Eleve.belongsTo(Classe, { foreignKey: 'fk_classe' });
 Eleve.belongsTo(Annee, { foreignKey: 'fk_annee' });
-Archive.belongsTo(Eleve, { foreignKey: 'fk_eleve' });
-Archive.belongsTo(Classe, { foreignKey: 'fk_classe' });
-Archive.belongsTo(Annee, { foreignKey: 'fk_annee' });
 
 (async () => {
   try {
