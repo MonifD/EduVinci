@@ -17,6 +17,36 @@ const Salle = sequelize.define('Salle', {
   },
 });
 
+// Table Professeur
+const Professeur = sequelize.define('Professeur', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  nom: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  prenom: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+});
+
+// Table Annee
+const Annee = sequelize.define('Annee', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  libelle: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+});
+
 // Table Classe
 const Classe = sequelize.define('Classe', {
   id: {
@@ -53,6 +83,10 @@ const Eleve = sequelize.define('Eleve', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  annee_naissance: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
   fk_classe: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -67,34 +101,25 @@ const Eleve = sequelize.define('Eleve', {
   },
 });
 
-// Table Professeur
-const Professeur = sequelize.define('Professeur', {
+// Table Archive
+const Archive = sequelize.define('Archive', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true,
   },
-  nom: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  prenom: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-});
-
-// Table Annee
-const Annee = sequelize.define('Annee', {
-  id: {
+  fk_eleve: {
     type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  },
-  libelle: {
-    type: DataTypes.STRING,
     allowNull: false,
   },
+  fk_classe: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  fk_annee: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  }
 });
 
 // Associations
@@ -102,6 +127,9 @@ Classe.belongsTo(Professeur, { foreignKey: 'fk_prof' });
 Classe.belongsTo(Salle, { foreignKey: 'fk_salle' });
 Eleve.belongsTo(Classe, { foreignKey: 'fk_classe' });
 Eleve.belongsTo(Annee, { foreignKey: 'fk_annee' });
+Archive.belongsTo(Eleve, { foreignKey: 'fk_eleve' });
+Archive.belongsTo(Classe, { foreignKey: 'fk_classe' });
+Archive.belongsTo(Annee, { foreignKey: 'fk_annee' });
 
 (async () => {
   try {
