@@ -1,3 +1,5 @@
+
+-- Créer les tables
 CREATE TABLE Salle (
     id INT AUTO_INCREMENT PRIMARY KEY,
     libelle VARCHAR(255) NOT NULL
@@ -27,7 +29,6 @@ CREATE TABLE Eleve (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(255) NOT NULL,
     prenom VARCHAR(255) NOT NULL,
-    annee_naissance YEAR NOT NULL,
     fk_classe INT NOT NULL,
     fk_annee INT NOT NULL,
     redouble BOOLEAN NOT NULL,
@@ -36,17 +37,17 @@ CREATE TABLE Eleve (
 );
 
 CREATE TABLE Archive (
-    id INT AUTO_INCREMENT PRIMARY KEY, -- Identifiant unique de l'archive
-    nom VARCHAR(255) NOT NULL, -- Nom de l'élève
-    prenom VARCHAR(255) NOT NULL, -- Prénom de l'élève
-    annee_naissance YEAR NOT NULL, -- Année de naissance de l'élève
-    annee_cours VARCHAR(255) NOT NULL, -- Année en cours (libellé)
-    classe VARCHAR(255) NOT NULL, -- Classe de l'élève
-    professeur VARCHAR(255) NOT NULL, -- Professeur responsable
-    passe BOOLEAN NOT NULL -- Indique si l'élève a passé l'année
+    id INT AUTO_INCREMENT PRIMARY KEY, 
+    nom VARCHAR(255) NOT NULL, 
+    prenom VARCHAR(255) NOT NULL, 
+    annee_naissance YEAR NOT NULL, 
+    annee_cours VARCHAR(255) NOT NULL, 
+    classe VARCHAR(255) NOT NULL, 
+    professeur VARCHAR(255) NOT NULL,
+    passe BOOLEAN NOT NULL 
 );
 
-
+-- Créer un utilisateur et lui accorder les privilèges nécessaires
 CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';
 GRANT ALL PRIVILEGES ON QuaDav.* TO 'admin'@'localhost';
 FLUSH PRIVILEGES;

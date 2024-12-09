@@ -1,8 +1,16 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = new Sequelize('QuaDav', 'admin', 'admin', {
-  host: 'localhost',
-  dialect: 'mysql',
-});
+const { db } = require('../Config/DbConfig');
+
+const sequelize = new Sequelize(
+  db.database,
+  db.user,
+  db.password,
+  {
+    host: db.host,
+    dialect: 'mysql',
+    logging: false,
+  }
+);
 
 // Table Salle
 const Salle = sequelize.define('Salle', {
@@ -83,10 +91,6 @@ const Eleve = sequelize.define('Eleve', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  annee_naissance: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
   fk_classe: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -100,6 +104,7 @@ const Eleve = sequelize.define('Eleve', {
     allowNull: false,
   },
 });
+
 
 // Table Archive
 const Archive = sequelize.define('Archive', {
@@ -144,14 +149,4 @@ Classe.belongsTo(Salle, { foreignKey: 'fk_salle' });
 Eleve.belongsTo(Classe, { foreignKey: 'fk_classe' });
 Eleve.belongsTo(Annee, { foreignKey: 'fk_annee' });
 
-(async () => {
-  try {
-    await sequelize.authenticate();
-    console.log('Connection has been established successfully.');
-
-    await sequelize.sync({ force: true }); // Warning: This will drop existing tables!
-    console.log('All models were synchronized successfully.');
-  } catch (error) {
-    console.error('Unable to connect to the database:', error);
-  }
-})();
+module.exports = { sequelize, Salle, Professeur, Annee, Classe, Eleve, Archive };
