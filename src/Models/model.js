@@ -60,16 +60,7 @@ const Classe = sequelize.define('Classe', {
     primaryKey: true,
   },
   libelle: {
-    type: DataTypes.ENUM(
-      'Petite section',
-      'Moyenne section',
-      'Grande section',
-      'CP',
-      'CE1',
-      'CE2',
-      'CM1',
-      'CM2'
-    ),
+    type: DataTypes.STRING,
     allowNull: false,
   },
   fk_prof: {
