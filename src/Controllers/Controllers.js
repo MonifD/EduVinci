@@ -182,3 +182,51 @@ exports.listEleves = async (req, res, next) => {
     res.status(500).json({ error: 'Une erreur est survenue lors de la récupération des élèves.' });
   }
 };
+
+exports.anneesuivante = async (req, res, next) => {
+  try {
+    // 1. Générer le libellé de la nouvelle année scolaire
+    const currentYear = new Date().getFullYear();
+    const nextYear = currentYear + 1;
+    const newYearLabel = `${currentYear}-${nextYear}`;
+
+    // 2. Vérifier si l'année existe déjà, sinon la créer
+    let newYear = await Annee.findOne({ where: { libelle: newYearLabel } });
+
+    if (!newYear) {
+      newYear = await Annee.create({ libelle: newYearLabel });
+    }
+
+    // 3. Mettre à jour les élèves avec une transaction
+    await sequelize.transaction(async (transaction) => {
+      // Élèves ayant "redouble" à false -> avancer leur fk_classe
+      const elevesToAdvance = await Eleve.findAll({
+        where: { redouble: false },
+        transaction,
+      });
+
+      for (const eleve of elevesToAdvance) {
+        await eleve.update(
+          { fk_classe: eleve.fk_classe + 1, fk_annee: newYear.id },
+          { transaction }
+        );
+      }
+
+      // Élèves ayant "redouble" à true -> remettre à false
+      await Eleve.update(
+        { redouble: false },
+        { where: { redouble: true }, transaction }
+      );
+    });
+
+    return res.status(200).json({
+      message: "Renouvellement de l'année scolaire effectué avec succès.",
+    });
+  } catch (error) {
+    console.error('Erreur lors du renouvellement de l\'année scolaire:', error);
+    return res.status(500).json({
+      message: 'Une erreur est survenue lors du renouvellement de l\'année scolaire.',
+      error: error.message,
+    });
+  }
+};
