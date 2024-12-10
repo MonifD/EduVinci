@@ -8,9 +8,24 @@ const { testRelations } = require('./src/data/dataInsert')
 
 const app = express();
 const port = 3000;
+const routes = require('./src/Routes');
+
 
 app.use(cors());
 app.use(express.json());
+
+// Configuration de l'utilisation des vues avec EJS
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'src', 'views')); // Chemin vers les vues
+
+
+// Configuration de l'analyseur d'URL
+app.use(express.urlencoded({ extended: true }));
+// Définir le dossier public pour servir les fichiers statiques
+app.use(express.static(path.join(__dirname, 'src', 'public')));
+
+
+app.use('/', routes);
 
 // Fonction pour initialiser la base de données
 async function initializeDatabase() {
@@ -31,19 +46,6 @@ function startServer() {
   });
 }
 
-// Configuration de l'analyseur d'URL
-app.use(express.urlencoded({ extended: true }));
-
-// Configuration de l'utilisation des vues avec EJS
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'src', 'views')); // Chemin vers les vues
-
-// Définir le dossier public pour servir les fichiers statiques
-app.use(express.static(path.join(__dirname, 'src', 'public')));
-
-// Importation des routes
-const routes = require('./src/routes'); // Routes dans le dossier src/routes
-app.use('/', routes);
 
 // Point d'entrée principal
 (async () => {
