@@ -1,16 +1,14 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const { db } = require('../Config/DbConfig');
 
-const sequelize = new Sequelize(
-  db.database,
-  db.user,
-  db.password,
-  {
-    host: db.host,
-    dialect: 'mysql',
-    logging: false,
-  }
-);
+const sequelize = new Sequelize({
+  username: db.user,
+  password: db.password,
+  host: db.host,
+  database: db.database,
+  dialect: 'mysql',
+  logging: false,
+});
 
 // Table Salle
 const Salle = sequelize.define('Salle', {
@@ -55,7 +53,6 @@ const Annee = sequelize.define('Annee', {
   },
 });
 
-// Table Classe
 const Classe = sequelize.define('Classe', {
   id: {
     type: DataTypes.INTEGER,
@@ -63,7 +60,16 @@ const Classe = sequelize.define('Classe', {
     primaryKey: true,
   },
   libelle: {
-    type: DataTypes.STRING,
+    type: DataTypes.ENUM(
+      'Petite section',
+      'Moyenne section',
+      'Grande section',
+      'CP',
+      'CE1',
+      'CE2',
+      'CM1',
+      'CM2'
+    ),
     allowNull: false,
   },
   fk_prof: {
