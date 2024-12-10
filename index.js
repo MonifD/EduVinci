@@ -8,7 +8,7 @@ const { testRelations } = require('./src/data/dataInsert')
 
 const app = express();
 const port = 3000;
-const routes = require('./src/Routes');
+const routes = require('./src/Routes/routes');
 
 
 app.use(cors());
