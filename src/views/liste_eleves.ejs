@@ -5,7 +5,13 @@
         <h1>Liste des élèves</h1>
     </div>
     <div class="liste-table-container">
+        
         <div class="liste-eleves-table">
+        <% if (eleves.length === 0) { %>
+        <div class="no-eleves-message">
+            <p>Aucun élève n'est inscrit pour le moment.</p>
+        </div>
+        <% } %>
         <table>
             <thead>
                 <tr>
@@ -20,8 +26,8 @@
                     <tr>
                         <td><p><%= eleve.nom %></p></td>
                         <td><p><%= eleve.prenom %></p></td>
-                        <td><p><%= eleve.date_naissance.toISOString().split('T')[0] %></p></td>
-                        <td><p><%= eleve.Classe ? eleve.Classe.libelle : 'Non assigné' %></p></td>
+                        <td id="td-center"><p><%= eleve.date_naissance.toISOString().split('T')[0] %></p></td>
+                        <td id="td-center"><p><%= eleve.Classe ? eleve.Classe.libelle : 'Non assigné' %></p></td>
                     </tr>
                 <% }) %>
             </tbody>

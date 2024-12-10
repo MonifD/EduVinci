@@ -1,10 +1,6 @@
-.liste-eleves-container {
-    border: 2px solid white;
-    height: 200rex;
-}
-
 .liste-table-container {
     margin-top: 5rex;
+    margin-bottom: 15rex;
     width: 100%;
 }
 
@@ -34,4 +30,8 @@
 .liste-eleves-table table td p {
     width: 80%;
     margin: 0 auto;
+}
+
+.no-eleves-message {
+    color: white;
 }

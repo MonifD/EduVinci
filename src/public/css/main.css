@@ -14,3 +14,8 @@ body {
     padding-top: 7rex;    
     color: white;
 }
+
+/*Style global pour toutes les cellules de tableau qui doivent être centrées*/
+#td-center {
+    text-align: center;
+}
