@@ -8,5 +8,6 @@ router.get('/', (req, res) => {
 });
 
 router.post('/inscription', controllers.registerEleve);
+router.get('/eleves', controllers.listEleves);
 
 module.exports = router;
