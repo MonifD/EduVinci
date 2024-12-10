@@ -8,7 +8,10 @@ const { testRelations } = require('./src/data/dataInsert')
 
 const app = express();
 const port = 3000;
+
 const routes = require('./src/Routes/routes');
+const authRouter = require('./src/Routes/authRouters')
+
 
 
 app.use(cors());
@@ -26,6 +29,7 @@ app.use(express.static(path.join(__dirname, 'src', 'public')));
 
 
 app.use('/', routes);
+app.use('/', authRouter);
 
 // Fonction pour initialiser la base de données
 async function initializeDatabase() {

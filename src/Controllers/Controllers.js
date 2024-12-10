@@ -1,5 +1,4 @@
 const { sequelize, Salle, Professeur, Annee, Classe, Eleve, Archive } = require('../Models/model');
-const { Op } = require('sequelize'); // Pour les opérations sur les dates
 
 const validClasses = [
     'Petite section',
