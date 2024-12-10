@@ -38,6 +38,12 @@ const Professeur = sequelize.define('Professeur', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  genre: {
+    type: DataTypes.ENUM('M.'
+                        ,'Mme.'
+                        ,'Mlle.'),
+    allowNull: false,
+  },
 });
 
 // Table Annee
