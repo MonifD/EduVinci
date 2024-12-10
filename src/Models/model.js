@@ -109,6 +109,10 @@ const Eleve = sequelize.define('Eleve', {
     type: DataTypes.BOOLEAN,
     allowNull: false,
   },
+  date_naissance: {  
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
 });
 
 // Table User
