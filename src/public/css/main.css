@@ -6,3 +6,16 @@ body {
     margin: 0;
     background-color: #0C4576;
 }
+
+/*Style global qui sera le même pour les titres de chaque vues*/
+.page-title {
+    width: 92%;
+    margin: 0 auto;
+    padding-top: 7rex;    
+    color: white;
+}
+
+/*Style global pour toutes les cellules de tableau qui doivent être centrées*/
+#td-center {
+    text-align: center;
+}
