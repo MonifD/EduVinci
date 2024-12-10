@@ -18,7 +18,7 @@ CREATE TABLE Annee (
 
 CREATE TABLE Classe (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    libelle VARCHAR(255) NOT NULL,
+    libelle ENUM('Petite section','Moyenne section','Grande section','CP', 'CE1', 'CE2', 'CM1', 'CM2') NOT NULL,
     fk_prof INT NOT NULL,
     fk_salle INT NOT NULL,
     FOREIGN KEY (fk_prof) REFERENCES Professeur(id),
