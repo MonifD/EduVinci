@@ -1,0 +1,32 @@
+<%- include('index') %>
+<link rel="stylesheet" href="/css/liste_eleves.css">
+<div class="liste-eleves-container">
+    <div class="page-title">
+        <h1>Liste des élèves</h1>
+    </div>
+    <div class="liste-table-container">
+        <div class="liste-eleves-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Date de naissance</th>
+                    <th>Classe</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% eleves.forEach(eleve => { %>
+                    <tr>
+                        <td><p><%= eleve.nom %></p></td>
+                        <td><p><%= eleve.prenom %></p></td>
+                        <td><p><%= eleve.date_naissance.toISOString().split('T')[0] %></p></td>
+                        <td><p><%= eleve.Classe ? eleve.Classe.libelle : 'Non assigné' %></p></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+        </div>
+    </div>
+    
+</div>

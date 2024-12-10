@@ -1,0 +1,37 @@
+.liste-eleves-container {
+    border: 2px solid white;
+    height: 200rex;
+}
+
+.liste-table-container {
+    margin-top: 5rex;
+    width: 100%;
+}
+
+.liste-eleves-table {
+    margin: 0 auto;
+    width: 60rem;
+}
+
+.liste-eleves-table table {
+    border-collapse: collapse;
+    background-color: #6C9BBD;
+    color: white;
+    border: 2px solid white;
+}
+
+.liste-eleves-table table th {
+    border: 2px solid white;
+    width: 15rem;
+    height: 8rex;
+}
+
+.liste-eleves-table table td {
+    height: 6rex;
+    border: 2px solid white;
+}
+
+.liste-eleves-table table td p {
+    width: 80%;
+    margin: 0 auto;
+}
