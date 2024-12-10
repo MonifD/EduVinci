@@ -1,5 +1,7 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const { db } = require('../Config/DbConfig');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const sequelize = new Sequelize({
   username: db.user,
@@ -119,7 +121,17 @@ const User = sequelize.define('User', {
     ,autoIncrement: true
     ,primaryKey: true,
   },
-  username: {
+  nom: {
+    type: DataTypes.STRING
+    ,allowNull: false
+    ,unique: true,
+  },
+  prenom: {
+    type: DataTypes.STRING
+    ,allowNull: false
+    ,unique: true,
+  },
+  email: {
     type: DataTypes.STRING
     ,allowNull: false
     ,unique: true,
@@ -134,6 +146,10 @@ const User = sequelize.define('User', {
                         ,'Professeur'
                         ,'Administrateur')
     ,allowNull: false,
+  },
+  authTokens: {
+    type: DataTypes.JSON, // Stocke les tokens sous forme de tableau JSON
+    defaultValue: [],
   },
 });
 
@@ -180,4 +196,13 @@ Classe.belongsTo(Salle, { foreignKey: 'fk_salle' });
 Eleve.belongsTo(Classe, { foreignKey: 'fk_classe' });
 Eleve.belongsTo(Annee, { foreignKey: 'fk_annee' });
 
-module.exports = { sequelize, Salle, Professeur, Annee, Classe, Eleve, Archive };
+
+User.prototype.generateJWT = async function () {
+  const expiresIn = '2h';
+  const authToken = jwt.sign({ id: this.id }, process.env.JWT_SECRET, { expiresIn });
+  this.authTokens = [...this.authTokens, { authToken }];
+  await this.save();
+  return authToken;
+};
+
+module.exports = { sequelize, Salle, Professeur, Annee, Classe, Eleve, Archive, User };
