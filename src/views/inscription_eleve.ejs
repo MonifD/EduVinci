@@ -16,9 +16,11 @@
             <label for="annee_scolaire">Année scolaire :</label>
             <select name="annee_scolaire" id="annee" required>
                 <option>Automatique</option>
-                <% annees.forEach(annee => { %>
-                    <option value="<%= annee.libelle %>"><%= annee.libelle %></option>
-                <% }); %>
+                <% if (annees && annees.length > 0) { %>
+                    <% annees.forEach(annee => { %>
+                        <option value="<%= annee.libelle %>"><%= annee.libelle %></option>
+                    <% }); %>
+                <% } %>
             </select>
 
             <div class="radio-group">

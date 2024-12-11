@@ -19,5 +19,3 @@ document.addEventListener('DOMContentLoaded', function () {
     redoubleOui.addEventListener('change', toggleRedoubleYears);
     redoubleNon.addEventListener('change', toggleRedoubleYears);
 });
-
-console.log("yoyoyo")
