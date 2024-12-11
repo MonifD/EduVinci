@@ -25,6 +25,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+// Route pour recupere les eleves pour le controllers
+router.post('/liste_eleves', controllers.listEleves);
 // Route pour afficher la liste des élèves dans une vue
 router.get('/liste_eleves', async (req, res) => {
     try {
