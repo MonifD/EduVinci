@@ -1,4 +1,7 @@
 const { sequelize, Salle, Professeur, Annee, Classe, Eleve, Archive } = require('../Models/model');
+const fs = require('fs');
+const readline = require('readline');
+const { Op } = require('sequelize');
 
 const validClasses = [
     'Petite section',
@@ -351,5 +354,70 @@ exports.deleteEleve = async (req, res, next) => {
       message: "Une erreur est survenue lors de la suppression de l'élève.",
       error: error.message,
     });
+  }
+};
+
+
+exports.importEleves = async (filePath) => {
+  try {
+      const fileStream = fs.createReadStream(filePath);
+      const rl = readline.createInterface({ input: fileStream, crlfDelay: Infinity });
+
+      let isHeader = true;
+      for await (const line of rl) {
+          const row = line.split(',');
+
+          if (isHeader) {
+              isHeader = false; // Skip header row
+              continue;
+          }
+
+          const [niveau, nomEleve, prenomEleve, dateNaissance, nomProfesseur] = row;
+          const [nomProf, prenomProf] = nomProfesseur.split(' ');
+
+          const [classe] = await Classe.findOrCreate({ where: { libelle: niveau } });
+          const [professeur] = await Professeur.findOrCreate({ where: { nom: nomProf, prenom: prenomProf } });
+
+          await Eleve.create({
+              nom: nomEleve,
+              prenom: prenomEleve,
+              date_naissance: new Date(dateNaissance),
+              fk_classe: classe.id,
+          });
+      }
+
+      console.log('Importation réussie.');
+  } catch (error) {
+      console.error('Erreur lors de l\'importation des élèves :', error);
+  }
+};
+
+exports.exportEleves = async (filePath) => {
+  try {
+      const eleves = await Eleve.findAll({
+          include: [
+              {
+                  model: Classe,
+                  attributes: ['libelle'],
+                  include: [{ model: Professeur, attributes: ['nom', 'prenom'] }],
+              },
+          ],
+      });
+
+      const header = 'Niveau,Nom Élève,Prénom Élève,Date de Naissance,Nom Professeur\n';
+      const rows = eleves.map((eleve) => {
+          const classe = eleve.Classe ? eleve.Classe.libelle : '';
+          const professeur = eleve.Classe?.Professeur
+              ? `${eleve.Classe.Professeur.nom} ${eleve.Classe.Professeur.prenom}`
+              : '';
+          return `${classe},${eleve.nom},${eleve.prenom},${eleve.date_naissance.toISOString().split('T')[0]},${professeur}`;
+      });
+
+      const fileContent = header + rows.join('\n');
+      fs.writeFileSync(filePath, fileContent);
+
+      console.log('Exportation réussie.');
+  } catch (error) {
+      console.error('Erreur lors de l\'exportation des élèves :', error);
   }
 };

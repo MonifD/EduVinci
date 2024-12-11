@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const path = require('path');
+const multer = require('multer');
 const controllers = require('../Controllers/elevesControllers');
 const anneesControllers = require('../Controllers/anneesControllers');
 
@@ -7,6 +9,20 @@ const anneesControllers = require('../Controllers/anneesControllers');
 router.get('/', (req, res) => {
     res.render('index', {});
 });
+
+
+// Configurer multer pour le téléchargement de fichiers
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const uploadPath = path.resolve('./uploads');
+        cb(null, uploadPath);
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    },
+});
+
+const upload = multer({ storage });
 
 // Route pour afficher la liste des élèves dans une vue
 router.get('/liste_eleves', async (req, res) => {
@@ -60,5 +76,30 @@ router.put('/eleves/:id', controllers.updateEleve);
 
 // Route pour supprimer un élève
 router.delete('/eleves/:id', controllers.deleteEleve);
+
+// Route pour afficher le formulaire d'importation
+router.get('/import', (req, res) => {
+    res.render('import_csv', {});
+});
+
+// Route pour gérer l'importation de fichiers CSV
+router.post('/import', upload.single('file'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'Aucun fichier téléchargé.' });
+        }
+
+        const filePath = req.file.path;
+        await controllers.importEleves(filePath);
+        res.status(200).json({ message: 'Importation réussie.' });
+    } catch (error) {
+        console.error('Erreur lors de l\'importation des élèves :', error);
+        res.status(500).json({
+            message: 'Une erreur est survenue lors de l\'importation des élèves.',
+            error: error.message,
+        });
+    }
+});
+
 
 module.exports = router;
