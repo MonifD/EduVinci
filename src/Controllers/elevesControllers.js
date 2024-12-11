@@ -1,4 +1,4 @@
-const { sequelize, Salle, Professeur, Annee, Classe, Eleve, Archive } = require('../Models/model');
+const { sequelize, Salle, Professeur, Annee, Classe, Eleve, Archive, user } = require('../Models/model');
 
 const validClasses = [
     'Petite section',
@@ -13,6 +13,9 @@ const validClasses = [
   
   exports.registerEleve = async (req, res, next) => {
     try {
+      if (!['Directrice', 'Maire'].includes(req.user.role)) {
+        return res.status(403).json({ message: 'Accès refusé. Seule la directrice ou la mairie peut inscrire un élève.' });
+      }
       const { nom, prenom, date_naissance, annee_scolaire, redouble } = req.body; // Récupère les données envoyées dans la requête
   
       // Vérifie si l'élève a au moins 3 ans avant l'année scolaire en cours (4 septembre)
@@ -188,6 +191,9 @@ exports.listEleves = async (req, res, next) => {
 
 exports.anneesuivante = async (req, res, next) => {
   try {
+    if (!['Directrice', 'Maire'].includes(req.user.role)) {
+      return res.status(403).json({ message: 'Accès refusé. Seule la directrice ou la mairie peut inscrire un élève.' });
+    }
     // 1. Générer le libellé de la nouvelle année scolaire
     const currentYear = new Date().getFullYear();
     const nextYear = currentYear + 1;
@@ -269,6 +275,9 @@ exports.anneesuivante = async (req, res, next) => {
 
 exports.setRedoublement = async (req, res, next) => {
   try {
+    if (!['Directrice', 'Professeur', 'Maire'].includes(req.user.role)) {
+      return res.status(403).json({ message: 'Accès refusé. Seule la directrice, un professeur ou la mairie peut marquer un élève en redoublement.' });
+    }
     // Récupération de l'ID de l'élève depuis les paramètres de la requête
     const { id } = req.params;
 
@@ -300,9 +309,11 @@ exports.setRedoublement = async (req, res, next) => {
 
 exports.updateEleve = async (req, res, next) => {
   try {
+    if (['Professeur'].includes(req.user.role)) {
+      return res.status(403).json({ message: 'Accès refusé. Les professeurs ne peuvent pas modifier un élève.' });
+    }
     const { id } = req.params; // Récupérer l'ID de l'élève depuis les paramètres
     const { nom, prenom, date_naissance } = req.body; // Récupérer les données à mettre à jour
-
     // Trouver l'élève par son ID
     const eleve = await Eleve.findByPk(id);
 
@@ -335,6 +346,9 @@ exports.updateEleve = async (req, res, next) => {
 
 exports.deleteEleve = async (req, res, next) => {
   try {
+    if (['Professeur'].includes(req.user.role)) {
+      return res.status(403).json({ message: 'Accès refusé. Les professeurs ne peuvent pas supprimer un élève.' });
+    }
     const { id } = req.params; // Récupérer l'ID de l'élève depuis les paramètres
 
     // Trouver l'élève par son ID
