@@ -30,7 +30,15 @@ router.post('/liste_eleves', controllers.listEleves);
 // Route pour afficher la liste des élèves dans une vue
 router.get('/liste_eleves', async (req, res) => {
     try {
-        const eleves = await controllers.listEleves(req, res);
+        const eleves = await new Promise((resolve, reject) => {
+            const mockRes = {
+                status: () => mockRes,
+                json: (data) => resolve(data),
+                send: reject,
+            };
+            controllers.listEleves(req, mockRes);
+        });
+
         res.render('liste_eleves', { eleves });
     } catch (error) {
         console.error('Erreur lors du chargement de la liste des élèves :', error);
@@ -42,7 +50,17 @@ router.get('/liste_eleves', async (req, res) => {
 // Route pour afficher le formulaire d'inscription
 router.get('/inscription', async (req, res) => {
     try {
-        const annees = await anneesControllers.getAllAnnees(req, res);
+        // Appel de la méthode du contrôleur anneesControllers
+        const annees = await new Promise((resolve, reject) => {
+            const mockRes = {
+                status: () => mockRes,
+                json: (data) => resolve(data),
+                send: reject,
+            };
+            anneesControllers.getAllAnnees(req, mockRes);
+        });
+
+        // Rendu de la vue avec les années récupérées
         res.render('inscription_eleve', { annees });
     } catch (error) {
         console.error('Erreur lors du chargement des années scolaires :', error);
