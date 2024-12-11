@@ -55,7 +55,7 @@ const Classe = sequelize.define('Classe', {
   },
   fk_prof: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
   },
 });
 
