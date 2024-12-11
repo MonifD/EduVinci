@@ -166,77 +166,89 @@ exports.listEleves = async (req, res, next) => {
   }
 };
 
-exports.anneesuivante = async (req, res, next) => {
+exports.anneeSuivante = async (req, res, next) => {
   try {
-    // 1. Générer le libellé de la nouvelle année scolaire
     const currentYear = new Date().getFullYear();
     const nextYear = currentYear + 1;
     const newYearLabel = `${currentYear}-${nextYear}`;
 
-    // 2. Vérifier si l'année existe déjà, sinon la créer
+    // 1. Vérification et création de l'année scolaire suivante
     let newYear = await Annee.findOne({ where: { libelle: newYearLabel } });
-
     if (!newYear) {
       newYear = await Annee.create({ libelle: newYearLabel });
     }
 
-    // 3. Récupérer les classes et gérer les élèves
+    // 2. Récupérer la classe CM2 et les autres classes
+    const cm2Class = await Classe.findOne({ where: { libelle: 'CM2' } });
+    if (!cm2Class) {
+      throw new Error("La classe CM2 n'existe pas.");
+    }
+
+    // 3. Début de la transaction pour archiver et mettre à jour les élèves
     await sequelize.transaction(async (transaction) => {
-      // Récupérer l'ID de la classe CM2
-      const cm2Class = await Classe.findOne({ where: { libelle: 'CM2' }, transaction });
-
-      if (!cm2Class) {
-        throw new Error("La classe CM2 n'existe pas dans la base de données.");
-      }
-
-      // Identifier les élèves passant au collège
+      // Archiver les élèves de CM2 (qui passent au collège)
       const elevesToArchive = await Eleve.findAll({
-        where: { fk_classe: cm2Class.id, redouble: false},
+        where: { fk_classe: cm2Class.id, redouble: false },
         include: [{ model: Classe }, { model: Annee }],
         transaction,
       });
 
       for (const eleve of elevesToArchive) {
-        // Archiver les données de l'élève
-        await Archive.create(
-          {
-            nom: eleve.nom,
-            prenom: eleve.prenom,
-            date_naissance: eleve.date_naissance,
-            annee_cours: eleve.Annee.libelle,
-            classe: eleve.Classe.libelle,
-            professeur: "Affectation inconnue (passé au collège)", // Pas de classe collège définie
-            passe: true,
-          },
-          { transaction }
-        );
+        // Archiver les élèves passant au collège
+        await Archive.create({
+          nom: eleve.nom,
+          prenom: eleve.prenom,
+          date_naissance: eleve.date_naissance,
+          annee_cours: eleve.Annee.libelle,
+          classe: eleve.Classe.libelle,
+          professeur: "Affectation inconnue (passé au collège)",
+          passe: true,
+        }, { transaction });
 
         // Supprimer l'élève de la table Eleve
         await eleve.destroy({ transaction });
       }
 
-      // Élèves non en CM2 avec redoublement = false -> avancer leur classe
+      // 4. Gérer les élèves non en CM2 mais sans redoublement (avancer d'une classe)
       const elevesToAdvance = await Eleve.findAll({
         where: { redouble: false, fk_classe: { [Op.ne]: cm2Class.id } },
         transaction,
       });
 
       for (const eleve of elevesToAdvance) {
-        await eleve.update(
-          { fk_classe: eleve.fk_classe + 1, fk_annee: newYear.id },
-          { transaction }
-        );
+        const nextClasse = await Classe.findOne({
+          where: { id: eleve.fk_classe + 1 }, // Passer à la classe suivante
+          transaction,
+        });
+
+        if (!nextClasse) {
+          throw new Error(`La classe suivante pour l'élève ${eleve.nom} ${eleve.prenom} n'existe pas.`);
+        }
+
+        // Mise à jour de l'élève (classe et année scolaire)
+        await eleve.update({
+          fk_classe: nextClasse.id,
+          fk_annee: newYear.id,
+        }, { transaction });
       }
 
-      // Élèves ayant "redouble" à true -> remettre à false
-      await Eleve.update(
-        { redouble: false },
-        { where: { redouble: true }, transaction }
-      );
+      // 5. Gérer les élèves en redoublement (mettre à jour l'année et réinitialiser le redoublement)
+      const elevesToRetain = await Eleve.findAll({
+        where: { redouble: true },
+        transaction,
+      });
+
+      for (const eleve of elevesToRetain) {
+        // Réinitialiser le redoublement et mettre à jour l'année
+        await eleve.update({
+          redouble: false,
+          fk_annee: newYear.id,
+        }, { transaction });
+      }
     });
 
     return res.status(200).json({
-      message: "Renouvellement de l'année scolaire effectué avec succès.",
+      message: "Le renouvellement de l'année scolaire a été effectué avec succès.",
     });
   } catch (error) {
     console.error('Erreur lors du renouvellement de l\'année scolaire:', error);
@@ -246,6 +258,7 @@ exports.anneesuivante = async (req, res, next) => {
     });
   }
 };
+
 
 exports.setRedoublement = async (req, res, next) => {
   try {

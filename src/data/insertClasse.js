@@ -7,6 +7,7 @@ async function initializeClasses() {
 
     // Liste des classes à insérer
     const classesToInsert = [
+      "Pré-inscription",
       "1ère section maternelle",
       "2ème section maternelle",
       "3ème section maternelle",
