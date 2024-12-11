@@ -1,4 +1,4 @@
-const { sequelize, Salle, Professeur, Annee, Classe, Eleve, Archive, user } = require('../Models/model');
+const { sequelize, Salle, Professeur, Annee, Classe, Eleve, Archive } = require('../Models/model');
 
 const validClasses = [
     'Petite section',
@@ -13,10 +13,7 @@ const validClasses = [
   
   exports.registerEleve = async (req, res, next) => {
     try {
-      if (!['Directrice', 'Maire'].includes(req.user.role)) {
-        return res.status(403).json({ message: 'Accès refusé. Seule la directrice ou la mairie peut inscrire un élève.' });
-      }
-      const { nom, prenom, date_naissance, annee_scolaire, redouble } = req.body; // Récupère les données envoyées dans la requête
+      const { nom, prenom, date_naissance, annee_scolaire, redouble, nb_redoublement } = req.body; // Récupère les données envoyées dans la requête
   
       // Vérifie si l'élève a au moins 3 ans avant l'année scolaire en cours (4 septembre)
       const dateNaissance = new Date(date_naissance); // Transforme la date de naissance en objet Date
@@ -24,8 +21,11 @@ const validClasses = [
   
       // Vérifie si l'élève a bien 3 ans ou plus avant la date limite
       if (dateNaissance > dateLimite) {
-        return res.status(400).json({
-          message: 'L\'élève doit avoir au moins 3 ans avant le 4 septembre de l\'année scolaire en cours.',
+        console.error('Erreur : L\'élève a moins de 3 ans.');
+        return res.render('confirmation_inscription', {
+          success: false,
+          message: 'Erreur lors de l\'inscription de l\'élève.',
+          error: 'L\'âge minimum requis est de 3 ans avant le 4 septembre.',
         });
       }
   
@@ -37,7 +37,7 @@ const validClasses = [
       // Recherche ou crée l'année scolaire
       let annee = await Annee.findOne({
         where: {
-          libelle: anneeScolaire,
+          id: anneeScolaire,
         },
       });
   
@@ -51,8 +51,8 @@ const validClasses = [
       // Calcule l'âge de l'élève pour déterminer la classe
       let age = new Date().getFullYear() - dateNaissance.getFullYear();
 
-      if (redouble) {
-      age = Math.max(age - 1, 3); // Décale d'une classe en-dessous si redouble
+      if (redouble === 'true') {
+      age = Math.max(age - nb_redoublement, 3); // Décale d'une classe en-dessous si redouble
     }
       let classeLibelle;
       if (age === 3) {
@@ -126,16 +126,19 @@ const validClasses = [
         date_naissance: dateNaissance,
         fk_classe: classe.id,
         fk_annee: annee.id,
-        redouble: !!redouble, // Par défaut, l'élève ne redouble pas
+        redouble: redouble === 'false' ? 0 : 1,
       });
   
-      return res.status(201).json({
+      res.render('confirmation_inscription', {
+        success: true,
         message: 'Élève créé avec succès.',
         eleve,
       });
+    
     } catch (error) {
       console.error('Erreur lors de la création de l\'élève:', error);
-      return res.status(500).json({
+      res.render('confirmation_inscription', {
+        success: false,
         message: 'Une erreur est survenue lors de la création de l\'élève.',
         error: error.message,
       });
@@ -178,9 +181,6 @@ exports.listEleves = async (req, res, next) => {
 
 exports.anneesuivante = async (req, res, next) => {
   try {
-    if (!['Directrice', 'Maire'].includes(req.user.role)) {
-      return res.status(403).json({ message: 'Accès refusé. Seule la directrice ou la mairie peut inscrire un élève.' });
-    }
     // 1. Générer le libellé de la nouvelle année scolaire
     const currentYear = new Date().getFullYear();
     const nextYear = currentYear + 1;
@@ -193,44 +193,11 @@ exports.anneesuivante = async (req, res, next) => {
       newYear = await Annee.create({ libelle: newYearLabel });
     }
 
-    // 3. Récupérer les classes et gérer les élèves
+    // 3. Mettre à jour les élèves avec une transaction
     await sequelize.transaction(async (transaction) => {
-      // Récupérer l'ID de la classe CM2
-      const cm2Class = await Classe.findOne({ where: { libelle: 'CM2' }, transaction });
-
-      if (!cm2Class) {
-        throw new Error("La classe CM2 n'existe pas dans la base de données.");
-      }
-
-      // Identifier les élèves passant au collège
-      const elevesToArchive = await Eleve.findAll({
-        where: { fk_classe: cm2Class.id, Redoublement: false},
-        include: [{ model: Classe }, { model: Annee }],
-        transaction,
-      });
-
-      for (const eleve of elevesToArchive) {
-        // Archiver les données de l'élève
-        await Archive.create(
-          {
-            nom: eleve.nom,
-            prenom: eleve.prenom,
-            date_naissance: eleve.date_naissance,
-            annee_cours: eleve.Annee.libelle,
-            classe: eleve.Classe.libelle,
-            professeur: "Affectation inconnue (passé au collège)", // Pas de classe collège définie
-            passe: true,
-          },
-          { transaction }
-        );
-
-        // Supprimer l'élève de la table Eleve
-        await eleve.destroy({ transaction });
-      }
-
-      // Élèves non en CM2 avec redoublement = false -> avancer leur classe
+      // Élèves ayant "redouble" à false -> avancer leur fk_classe
       const elevesToAdvance = await Eleve.findAll({
-        where: { redouble: false, fk_classe: { [Op.ne]: cm2Class.id } },
+        where: { redouble: false },
         transaction,
       });
 
@@ -255,108 +222,6 @@ exports.anneesuivante = async (req, res, next) => {
     console.error('Erreur lors du renouvellement de l\'année scolaire:', error);
     return res.status(500).json({
       message: 'Une erreur est survenue lors du renouvellement de l\'année scolaire.',
-      error: error.message,
-    });
-  }
-};
-
-exports.setRedoublement = async (req, res, next) => {
-  try {
-    if (!['Directrice', 'Professeur', 'Maire'].includes(req.user.role)) {
-      return res.status(403).json({ message: 'Accès refusé. Seule la directrice, un professeur ou la mairie peut marquer un élève en redoublement.' });
-    }
-    // Récupération de l'ID de l'élève depuis les paramètres de la requête
-    const { id } = req.params;
-
-    // Vérification de l'existence de l'élève
-    const eleve = await Eleve.findByPk(id);
-
-    if (!eleve) {
-      return res.status(404).json({
-        message: "Élève non trouvé.",
-      });
-    }
-
-    // Mise à jour de l'état de redoublement de l'élève
-    eleve.redouble = !eleve.redouble;
-    await eleve.save();
-
-    return res.status(200).json({
-      message: `L'élève ${eleve.nom} ${eleve.prenom} a été marqué en redoublement.`,
-      eleve,
-    });
-  } catch (error) {
-    console.error("Erreur lors de la mise à jour de l'état de redoublement :", error);
-    return res.status(500).json({
-      message: "Une erreur est survenue lors de la mise à jour de l'état de redoublement.",
-      error: error.message,
-    });
-  }
-};
-
-exports.updateEleve = async (req, res, next) => {
-  try {
-    if (['Professeur'].includes(req.user.role)) {
-      return res.status(403).json({ message: 'Accès refusé. Les professeurs ne peuvent pas modifier un élève.' });
-    }
-    const { id } = req.params; // Récupérer l'ID de l'élève depuis les paramètres
-    const { nom, prenom, date_naissance } = req.body; // Récupérer les données à mettre à jour
-    // Trouver l'élève par son ID
-    const eleve = await Eleve.findByPk(id);
-
-    if (!eleve) {
-      return res.status(404).json({
-        message: "Élève non trouvé.",
-      });
-    }
-
-    // Mettre à jour les champs spécifiés
-    if (nom) eleve.nom = nom;
-    if (prenom) eleve.prenom = prenom;
-    if (date_naissance) eleve.date_naissance = date_naissance;
-
-    // Sauvegarder les modifications
-    await eleve.save();
-
-    return res.status(200).json({
-      message: "Élève mis à jour avec succès.",
-      eleve,
-    });
-  } catch (error) {
-    console.error("Erreur lors de la mise à jour de l'élève :", error);
-    return res.status(500).json({
-      message: "Une erreur est survenue lors de la mise à jour de l'élève.",
-      error: error.message,
-    });
-  }
-};
-
-exports.deleteEleve = async (req, res, next) => {
-  try {
-    if (['Professeur'].includes(req.user.role)) {
-      return res.status(403).json({ message: 'Accès refusé. Les professeurs ne peuvent pas supprimer un élève.' });
-    }
-    const { id } = req.params; // Récupérer l'ID de l'élève depuis les paramètres
-
-    // Trouver l'élève par son ID
-    const eleve = await Eleve.findByPk(id);
-
-    if (!eleve) {
-      return res.status(404).json({
-        message: "Élève non trouvé.",
-      });
-    }
-
-    // Supprimer l'élève
-    await eleve.destroy();
-
-    return res.status(200).json({
-      message: "Élève supprimé avec succès.",
-    });
-  } catch (error) {
-    console.error("Erreur lors de la suppression de l'élève :", error);
-    return res.status(500).json({
-      message: "Une erreur est survenue lors de la suppression de l'élève.",
       error: error.message,
     });
   }
