@@ -200,11 +200,44 @@ exports.anneesuivante = async (req, res, next) => {
       newYear = await Annee.create({ libelle: newYearLabel });
     }
 
-    // 3. Mettre à jour les élèves avec une transaction
+    // 3. Récupérer les classes et gérer les élèves
     await sequelize.transaction(async (transaction) => {
-      // Élèves ayant "redouble" à false -> avancer leur fk_classe
+      // Récupérer l'ID de la classe CM2
+      const cm2Class = await Classe.findOne({ where: { libelle: 'CM2' }, transaction });
+
+      if (!cm2Class) {
+        throw new Error("La classe CM2 n'existe pas dans la base de données.");
+      }
+
+      // Identifier les élèves passant au collège
+      const elevesToArchive = await Eleve.findAll({
+        where: { fk_classe: cm2Class.id, Redoublement: false},
+        include: [{ model: Classe }, { model: Annee }],
+        transaction,
+      });
+
+      for (const eleve of elevesToArchive) {
+        // Archiver les données de l'élève
+        await Archive.create(
+          {
+            nom: eleve.nom,
+            prenom: eleve.prenom,
+            date_naissance: eleve.date_naissance,
+            annee_cours: eleve.Annee.libelle,
+            classe: eleve.Classe.libelle,
+            professeur: "Affectation inconnue (passé au collège)", // Pas de classe collège définie
+            passe: true,
+          },
+          { transaction }
+        );
+
+        // Supprimer l'élève de la table Eleve
+        await eleve.destroy({ transaction });
+      }
+
+      // Élèves non en CM2 avec redoublement = false -> avancer leur classe
       const elevesToAdvance = await Eleve.findAll({
-        where: { redouble: false },
+        where: { redouble: false, fk_classe: { [Op.ne]: cm2Class.id } },
         transaction,
       });
 
@@ -229,6 +262,37 @@ exports.anneesuivante = async (req, res, next) => {
     console.error('Erreur lors du renouvellement de l\'année scolaire:', error);
     return res.status(500).json({
       message: 'Une erreur est survenue lors du renouvellement de l\'année scolaire.',
+      error: error.message,
+    });
+  }
+};
+
+exports.setRedoublement = async (req, res, next) => {
+  try {
+    // Récupération de l'ID de l'élève depuis les paramètres de la requête
+    const { id } = req.params;
+
+    // Vérification de l'existence de l'élève
+    const eleve = await Eleve.findByPk(id);
+
+    if (!eleve) {
+      return res.status(404).json({
+        message: "Élève non trouvé.",
+      });
+    }
+
+    // Mise à jour de l'état de redoublement de l'élève
+    eleve.redouble = true;
+    await eleve.save();
+
+    return res.status(200).json({
+      message: `L'élève ${eleve.nom} ${eleve.prenom} a été marqué en redoublement.`,
+      eleve,
+    });
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour de l'état de redoublement :", error);
+    return res.status(500).json({
+      message: "Une erreur est survenue lors de la mise à jour de l'état de redoublement.",
       error: error.message,
     });
   }
