@@ -1,16 +1,11 @@
 const express = require('express');
-const router = express.Router();
 const path = require('path');
 const multer = require('multer');
 const controllers = require('../Controllers/elevesControllers');
 const anneesControllers = require('../Controllers/anneesControllers');
-const authe = require('../middlewares/authentification')
+const authe = require('../middlewares/authentification');
 
-// Route pour la page d'accueil
-router.get('/', (req, res) => {
-    res.render('index', {});
-});
-
+const router = express.Router();
 
 // Configurer multer pour le téléchargement de fichiers
 const storage = multer.diskStorage({
@@ -25,18 +20,15 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+// Route pour la page d'accueil
+router.get('/', (req, res) => {
+    res.render('index', {});
+});
+
 // Route pour afficher la liste des élèves dans une vue
 router.get('/liste_eleves', async (req, res) => {
     try {
-        const eleves = await new Promise((resolve, reject) => {
-            const mockRes = {
-                status: () => mockRes,
-                json: (data) => resolve(data),
-                send: reject,
-            };
-            controllers.listEleves(req, mockRes);
-        });
-
+        const eleves = await controllers.listEleves(req, res);
         res.render('liste_eleves', { eleves });
     } catch (error) {
         console.error('Erreur lors du chargement de la liste des élèves :', error);
@@ -44,19 +36,10 @@ router.get('/liste_eleves', async (req, res) => {
     }
 });
 
-router.post('/inscription', controllers.registerEleve);
+// Route pour afficher le formulaire d'inscription
 router.get('/inscription', async (req, res) => {
     try {
-        // Appel de la méthode du contrôleur anneesControllers
-        const annees = await new Promise((resolve, reject) => {
-            const mockRes = {
-                status: () => mockRes,
-                json: (data) => resolve(data),
-                send: reject,
-            };
-            anneesControllers.getAllAnnees(req, mockRes);
-        });
-        // Rendu de la vue avec les années récupérées
+        const annees = await anneesControllers.getAllAnnees(req, res);
         res.render('inscription_eleve', { annees });
     } catch (error) {
         console.error('Erreur lors du chargement des années scolaires :', error);
@@ -64,7 +47,8 @@ router.get('/inscription', async (req, res) => {
     }
 });
 
-
+// Route pour inscrire un élève
+router.post('/inscription', controllers.registerEleve);
 
 // Route pour avancer à l'année suivante
 router.post('/annee_suivante', controllers.anneesuivante);
@@ -102,5 +86,16 @@ router.post('/import', upload.single('file'), async (req, res) => {
     }
 });
 
+// Route pour exporter les élèves vers un fichier CSV
+router.get('/export', async (req, res) => {
+    try {
+        const filePath = path.resolve('./exports/eleves_export.csv');
+        await controllers.exportEleves(filePath);
+        res.download(filePath);
+    } catch (error) {
+        console.error('Erreur lors de l\'exportation des élèves :', error);
+        res.status(500).json({ message: 'Une erreur est survenue lors de l\'exportation des élèves.', error: error.message });
+    }
+});
 
 module.exports = router;

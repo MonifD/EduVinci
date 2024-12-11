@@ -363,34 +363,67 @@ exports.importEleves = async (filePath) => {
       const fileStream = fs.createReadStream(filePath);
       const rl = readline.createInterface({ input: fileStream, crlfDelay: Infinity });
 
+      // Déterminer l'année en cours
+      const currentYear = new Date().getFullYear();
+      const nextYear = currentYear + 1;
+      const currentYearLabel = `${currentYear}-${nextYear}`;
+
+      // Vérifier ou créer l'année en cours dans la table "Annee"
+      const [currentYearEntry] = await Annee.findOrCreate({
+          where: { libelle: currentYearLabel },
+      });
+
       let isHeader = true;
+
       for await (const line of rl) {
           const row = line.split(',');
 
           if (isHeader) {
-              isHeader = false; // Skip header row
+              isHeader = false; // Ignorer la ligne d'en-tête
               continue;
           }
 
-          const [niveau, nomEleve, prenomEleve, dateNaissance, nomProfesseur] = row;
+          const [niveau, nomEleve, prenomEleve, dateNaissance, nomProfesseur] = row.map((col) =>
+              col.trim()
+          );
+
           const [nomProf, prenomProf] = nomProfesseur.split(' ');
 
-          const [classe] = await Classe.findOrCreate({ where: { libelle: niveau } });
-          const [professeur] = await Professeur.findOrCreate({ where: { nom: nomProf, prenom: prenomProf } });
+          // Vérifier ou créer la classe
+          const [classe] = await Classe.findOrCreate({
+              where: { libelle: niveau },
+          });
 
+          // Vérifier ou créer le professeur
+          const [professeur] = await Professeur.findOrCreate({
+              where: { nom: nomProf, prenom: prenomProf },
+          });
+
+          // Associer la classe au professeur (si nécessaire)
+          if (!classe.fk_prof) {
+              classe.fk_prof = professeur.id;
+              await classe.save();
+          }
+
+          // Créer l'élève avec les clés étrangères associées
           await Eleve.create({
               nom: nomEleve,
               prenom: prenomEleve,
               date_naissance: new Date(dateNaissance),
               fk_classe: classe.id,
+              fk_annee: currentYearEntry.id,
+              redouble: false, 
           });
       }
 
       console.log('Importation réussie.');
   } catch (error) {
-      console.error('Erreur lors de l\'importation des élèves :', error);
+      console.error("Erreur lors de l'importation des élèves :", error);
   }
 };
+
+
+
 
 exports.exportEleves = async (filePath) => {
   try {
@@ -399,18 +432,28 @@ exports.exportEleves = async (filePath) => {
               {
                   model: Classe,
                   attributes: ['libelle'],
-                  include: [{ model: Professeur, attributes: ['nom', 'prenom'] }],
+                  include: [
+                      {
+                          model: Professeur,
+                          attributes: ['nom', 'prenom'],
+                      },
+                  ],
+              },
+              {
+                  model: Annee,
+                  attributes: ['libelle'],
               },
           ],
       });
 
-      const header = 'Niveau,Nom Élève,Prénom Élève,Date de Naissance,Nom Professeur\n';
+      const header = 'Niveau,Nom Élève,Prénom Élève,Date de Naissance,Nom Professeur,Année Scolaire\n';
       const rows = eleves.map((eleve) => {
           const classe = eleve.Classe ? eleve.Classe.libelle : '';
           const professeur = eleve.Classe?.Professeur
               ? `${eleve.Classe.Professeur.nom} ${eleve.Classe.Professeur.prenom}`
               : '';
-          return `${classe},${eleve.nom},${eleve.prenom},${eleve.date_naissance.toISOString().split('T')[0]},${professeur}`;
+          const annee = eleve.Annee ? eleve.Annee.libelle : '';
+          return `${classe},${eleve.nom},${eleve.prenom},${eleve.date_naissance.toISOString().split('T')[0]},${professeur},${annee}`;
       });
 
       const fileContent = header + rows.join('\n');
@@ -418,6 +461,7 @@ exports.exportEleves = async (filePath) => {
 
       console.log('Exportation réussie.');
   } catch (error) {
-      console.error('Erreur lors de l\'exportation des élèves :', error);
+      console.error("Erreur lors de l'exportation des élèves :", error);
   }
 };
+
