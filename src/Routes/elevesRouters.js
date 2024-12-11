@@ -62,7 +62,7 @@ router.get('/inscription', async (req, res) => {
 router.post('/inscription', controllers.registerEleve);
 
 // Route pour avancer à l'année suivante
-router.post('/annee_suivante', controllers.anneesuivante);
+router.post('/annee_suivante', controllers.anneeSuivante);
 
 // Route pour passer un élève en redoublement
 router.put('/eleves/:id/redoublement', controllers.setRedoublement);
