@@ -2,6 +2,7 @@
 const { Sequelize } = require('sequelize');
 const { db } = require('../Config/DbConfig');
 const { sequelize } = require('../Models/model'); // Import des modèles
+require('dotenv').config();
 
 
 // Vérification de la connexion à la base de données et création si nécessaire
@@ -52,9 +53,12 @@ async function connectToDatabase() {
 // Synchronisation des modèles avec la base de données
 async function syncModels() {
   try {
-    // Synchronisation des modèles
-    await sequelize.sync({ alter: true }); // Utilisez { force: true } pour recréer toutes les tables
-    console.log('Modèles synchronisés avec la base de données.');
+    // Synchronisation une seule fois lors du premier démarrage
+    if (process.env.DATABASE_SYNC_ONCE !== 'true') {
+      await sequelize.sync();  // Synchroniser uniquement si nécessaire
+      console.log('Modèles synchronisés avec la base de données.');
+      process.env.DATABASE_SYNC_ONCE = 'true';  // Indiquer que la synchronisation a déjà eu lieu
+    }
   } catch (error) {
     console.error('Erreur lors de la synchronisation des modèles :', error);
   }

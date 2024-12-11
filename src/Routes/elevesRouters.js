@@ -25,6 +25,8 @@ router.get('/', (req, res) => {
     res.render('index', {});
 });
 
+// Route pour afficher la liste des élèves dans le back
+router.post('/liste_eleves', controllers.listEleves);
 // Route pour afficher la liste des élèves dans une vue
 router.get('/liste_eleves', async (req, res) => {
     try {
