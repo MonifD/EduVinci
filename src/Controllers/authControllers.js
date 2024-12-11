@@ -58,18 +58,18 @@ exports.register = async (req, res) => {
           role,
       });
 
-      return res.status(201).json({
-          message: 'Inscription réussie.',
-          user: {
-              id: newUser.id,
-              nom: newUser.nom,
-              prenom: newUser.prenom,
-              email: newUser.email,
-              role: newUser.role,
-          },
-      });
-  } catch (error) {
-      console.error('Erreur lors de l\'inscription :', error);
-      res.status(500).json({ message: 'Une erreur est survenue.' });
-  }
+      return res.render('register', {
+        message: 'Inscription réussie.',
+        user: {
+            id: newUser.id,
+            nom: newUser.nom,
+            prenom: newUser.prenom,
+            email: newUser.email,
+            role: newUser.role,
+        },
+    });
+} catch (error) {
+    console.error('Erreur lors de l\'inscription :', error);
+    return res.render('register', { message: 'Une erreur est survenue.' });
+}
 };
