@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const controllers = require('../Controllers/Controllers');
+const elevesControllers = require('../Controllers/elevesControllers');
 
 // Route pour la page d'accueil
 router.get('/', (req, res) => {
@@ -31,7 +32,7 @@ router.get('/inscription', (req, res) => {
     res.render('inscription_eleve');
 })
 
-router.post('/inscription', controllers.registerEleve);
+router.post('/inscription', elevesControllers.registerEleve);
 router.get('/eleves', controllers.listEleves);
 
 module.exports = router;

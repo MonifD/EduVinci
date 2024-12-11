@@ -1,0 +1,26 @@
+<%- include('index') %>
+<link rel="stylesheet" href="/css/confirmation_inscription.css">
+
+<div class="confirmation-container">
+    <% if (success) { %>
+        <div class="success-message">
+            <h1><%= message %></h1>
+            <p>Nom : <%= eleve.nom %></p>
+            <p>Prénom : <%= eleve.prenom %></p>
+            <p id="date-naissance">Date de naissance : <%= eleve.date_naissance %></p>
+        </div>
+    <% } else { %>
+        <div class="error-message">
+            <h1><%= message %></h1>
+            <p>Détails de l'erreur : <%= error %></p>
+        </div>
+    <% } %>
+    <button onclick="window.location.href='/liste_eleves'" class="btn-retour">Retourner à la liste des élèves</a>
+</div>
+
+<script>
+    const dateElement = document.getElementById('date-naissance');
+    const rawDate = new Date(dateElement.textContent.split(': ')[1].trim());
+    const formattedDate = rawDate.toLocaleDateString('fr-FR');
+    dateElement.textContent = `Date de naissance : ${formattedDate}`;
+</script>
