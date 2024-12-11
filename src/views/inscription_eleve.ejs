@@ -13,10 +13,11 @@
             <input name="prenom" type="text" required placeholder="Saisir un prénom...">
             <label for="date_naissance">Date de naissance :</label>
             <input name="date_naissance" type="date" required>
-            <label for="annee_scolaire">Pour l'année scolaire :</label>
+            <label for="annee_scolaire">Année scolaire :</label>
             <select name="annee_scolaire" id="annee" required>
+                <option>Automatique</option>
                 <% annees.forEach(annee => { %>
-                    <option value="<%= annee.id %>"><%= annee.libelle %></option>
+                    <option value="<%= annee.libelle %>"><%= annee.libelle %></option>
                 <% }); %>
             </select>
 

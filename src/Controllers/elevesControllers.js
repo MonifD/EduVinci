@@ -30,14 +30,15 @@ exports.registerEleve = async (req, res, next) => {
     }
 
     // Si l'utilisateur n'a pas spécifié d'année scolaire, on calcule l'année scolaire par défaut
-    let anneeScolaire = annee_scolaire || (new Date().getMonth() >= 8
+    let anneeScolaire = annee_scolaire === 'Automatique' ? (new Date().getMonth() >= 8
       ? `${new Date().getFullYear()}-${new Date().getFullYear() + 1}`  // Si on est après septembre
-      : `${new Date().getFullYear() - 1}-${new Date().getFullYear()}`); // Si avant septembre
+      : `${new Date().getFullYear() - 1}-${new Date().getFullYear()}`)  // Si avant septembre
+      : annee_scolaire;
 
     // Recherche ou crée l'année scolaire
     let annee = await Annee.findOne({
       where: {
-        id: anneeScolaire,
+        libelle: anneeScolaire,
       },
     });
 
