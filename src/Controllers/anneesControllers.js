@@ -1,4 +1,4 @@
-const { sequelize, Annee} = require('../Models/model');
+const { Annee } = require('../Models/model');
 
 exports.getAllAnnees = async (req, res, next) => {
   try {
