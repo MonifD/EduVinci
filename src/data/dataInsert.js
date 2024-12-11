@@ -1,4 +1,4 @@
-const { sequelize, Professeur, Salle, Classe, Eleve, Annee } = require('../Models/model'); // Import des modèles nécessaires
+const { sequelize, Professeur, Classe, Eleve, Annee } = require('../Models/model'); // Import des modèles nécessaires
 
 // Fonction de test des relations et insertion de données
 async function testRelations() {
@@ -9,9 +9,6 @@ async function testRelations() {
     // Insérer un professeur
     const professeur = await Professeur.create({ nom: 'Doe', prenom: 'John' });
 
-    // Insérer une salle
-    const salle = await Salle.create({ libelle: 'Salle 101' });
-
     // Insérer une année
     const annee = await Annee.create({ libelle: '2023-2024' });
 
@@ -19,7 +16,6 @@ async function testRelations() {
     const classe = await Classe.create({
       libelle: 'CP', // Exemple d'une valeur valide
       fk_prof: professeur.id,
-      fk_salle: salle.id
     });
 
     // Insérer un élève avec des relations à la classe et à l'année
@@ -37,7 +33,7 @@ async function testRelations() {
       include: [
         {
           model: Classe,
-          include: [Professeur, Salle] // Inclure Professeur et Salle liés à la Classe
+          include: [Professeur] // Inclure Professeur et Salle liés à la Classe
         },
         {
           model: Annee // Inclure l'Année

@@ -8,17 +8,7 @@ const authe = require('../middlewares/authentification');
 const router = express.Router();
 
 // Configurer multer pour le téléchargement de fichiers
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadPath = path.resolve('./uploads');
-        cb(null, uploadPath);
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
-    },
-});
-
-const upload = multer({ storage });
+const upload = multer({ dest: "src/uploads/" });
 
 // Route pour la page d'accueil
 router.get('/', (req, res) => {
@@ -89,7 +79,7 @@ router.get('/import', (req, res) => {
 });
 
 // Route pour gérer l'importation de fichiers CSV
-router.post('/import', upload.single('file'), async (req, res) => {
+router.post('/import', upload.single("file"), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ message: 'Aucun fichier téléchargé.' });
