@@ -5,21 +5,15 @@ const { Professeur } = require('../Models/model');
 // Création d'un professeur
 exports.registerProfesseur = async (req, res, next) => {
   try {
-    const { nom, prenom, genre } = req.body;
+    const { nom, prenom } = req.body;
 
     // Vérification des champs obligatoires
-    if (!nom || !prenom || !genre) {
+    if (!nom || !prenom ) {
       return res.status(400).json({ message: 'Tous les champs sont obligatoires.' });
     }
 
-    // Vérification du genre
-    const validGenres = ['M.', 'Mme.', 'Mlle.'];
-    if (!validGenres.includes(genre)) {
-      return res.status(400).json({ message: 'Le genre fourni est invalide.' });
-    }
-
     // Création du professeur
-    const professeur = await Professeur.create({ nom, prenom, genre });
+    const professeur = await Professeur.create({ nom, prenom });
 
     return res.status(201).json({
       message: 'Professeur ajouté avec succès.',
@@ -36,7 +30,7 @@ exports.listProfesseurs = async (req, res, next) => {
   try {
     const professeurs = await Professeur.findAll({
 
-      attributes: ['id', 'nom', 'prenom', 'genre'],
+      attributes: ['id', 'nom', 'prenom'],
     });
     res.status(200).json(professeurs);
   } catch (error) {
@@ -49,7 +43,7 @@ exports.listProfesseurs = async (req, res, next) => {
 exports.updateProfesseur = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { nom, prenom, genre } = req.body;
+    const { nom, prenom } = req.body;
 
     const professeur = await Professeur.findByPk(id);
 
@@ -60,7 +54,6 @@ exports.updateProfesseur = async (req, res, next) => {
     // Mise à jour des champs fournis
     if (nom) professeur.nom = nom;
     if (prenom) professeur.prenom = prenom;
-    if (genre) professeur.genre = genre;
 
     await professeur.save();
 
