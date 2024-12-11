@@ -9,32 +9,6 @@
 const { Professeur, Classe, Eleve, Salle } = require('../Models/model');
 
 /**
- * Connexion d'un professeur via son ID.
- */
-exports.loginProfesseur = async (req, res) => {
-  try {
-    const { id } = req.body; // Récupère l'ID du professeur depuis le corps de la requête
-
-    // Vérifier si le professeur existe
-    const professeur = await Professeur.findByPk(id);
-    if (!professeur) {
-      return res.status(404).json({ message: "Professeur non trouvé." });
-    }
-
-    return res.status(200).json({
-      message: "Connexion réussie.",
-      professeur,
-    });
-  } catch (error) {
-    console.error("Erreur lors de la connexion :", error);
-    return res.status(500).json({
-      message: "Une erreur est survenue lors de la connexion.",
-      error: error.message,
-    });
-  }
-};
-
-/**
  * Récupérer la liste des classes dédiées à un professeur.
  */
 exports.getClassesForProfesseur = async (req, res) => {
