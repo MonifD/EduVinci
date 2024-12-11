@@ -27,6 +27,9 @@ router.get('/liste_eleves', async (req, res) => {
     }
 });
 
+router.get('/inscription', (req, res) => {
+    res.render('inscription_eleve');
+})
 
 router.post('/inscription', controllers.registerEleve);
 router.get('/eleves', controllers.listEleves);

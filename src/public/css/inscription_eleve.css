@@ -1,0 +1,69 @@
+.form-container {
+    width: 70rem;
+    height: 65rex;
+    background-color: #6C9BBD;
+    border-radius: 15px;
+    margin: 0 auto;
+    margin-top: 6rex;
+}
+
+.form-container form {
+    margin: 0 auto;
+    height: 100%;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.form-container label {
+    color: white;
+    font-weight: 700;
+    font-size: 19px;
+}
+
+.form-container form input, .form-container form select {
+    font-family: 'Inter', sans-serif;
+    margin-bottom: 15px;
+    height: 35px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.form-container form input[type="submit"] {
+    margin: 0 auto;
+    margin-top: 28px;
+    background-color: white;
+    color: black;
+    font-size: 22px;
+    font-weight: 600;
+    border: 2px solid black;
+    padding: 0px;
+    height: 60px;
+    width: 250px;
+    cursor: pointer;
+}
+
+.form-container form .radio-group {
+    display: flex;
+    justify-content: space-between;
+}
+
+.form-container form .radio-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+}
+
+.form-container form .radio-group .form-redouble {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+    margin-left: 10px;
+}
+
+.form-container form #redouble-years input {
+    margin-left: 50px;
+    width: 30px;
+}

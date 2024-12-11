@@ -1,0 +1,36 @@
+<%- include('index') %>
+<link rel="stylesheet" href="/css/inscription_eleve.css">
+<script src="/js/inscription_eleve.js"></script>
+<div class="liste-eleves-container">
+    <div class="page-title">
+        <h1>Inscription d'un nouvel élève</h1>
+    </div>
+    <div class="form-container">
+        <form action="/inscription" method="POST">
+            <label for="nom">Nom :</label>
+            <input name="nom" type="text" required placeholder="Saisir un nom...">
+            <label for="prenom">Prénom :</label>
+            <input name="prenom" type="text" required placeholder="Saisir un prénom...">
+            <label for="date_naissance">Date de naissance</label>
+            <input name="date_naissance" type="date" required>
+
+            <div class="radio-group">
+                <label>L'élève a-t-il déjà redoublé auparavant ?</label>
+                <div class="form-redouble">
+                    <label>
+                        <input type="radio" name="redouble" value="false" required checked> Non
+                    </label>
+                    <label>
+                        <input type="radio" name="redouble" value="true" required> Oui
+                    </label>
+                </div>
+            </div>
+            <div id="redouble-years" style="display: none;">
+                <label for="nb_redoublement">Combien d'années a-t-il redoublé ?</label>
+                <input name="nb_redoublement" type="number" min="1" max="10" value="1"/>
+            </div>
+            
+            <input type="submit" value="Inscrire l'élève">
+        </form>
+    </div>
+</div>
