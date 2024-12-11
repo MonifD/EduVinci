@@ -1,7 +1,11 @@
-const { sequelize, Salle, Professeur, Annee, Classe, Eleve, Archive } = require('../Models/model');
+const { sequelize, Professeur, Annee, Classe, Eleve, Archive } = require('../Models/model');
 const fs = require('fs');
 const readline = require('readline');
 const { Op } = require('sequelize');
+const multer = require("multer");
+
+// Configuration de multer
+const upload = multer({ dest: "uploads/" });
 
 const validClasses = [
     'Petite section',
@@ -96,17 +100,6 @@ exports.registerEleve = async (req, res, next) => {
       });
     }
 
-    // Recherche ou crée une salle par défaut
-    let salle = await Salle.findOne({
-      where: { libelle: 'Salle 101' },
-    });
-
-    if (!salle) {
-      salle = await Salle.create({
-        libelle: 'Salle 101',
-      });
-    }
-
     // Recherche ou crée la classe avec son libellé
     let classe = await Classe.findOne({
       where: {
@@ -118,8 +111,7 @@ exports.registerEleve = async (req, res, next) => {
       // Si la classe n'existe pas, on la crée
       classe = await Classe.create({
         libelle: classeLibelle,
-        fk_prof: professeur.id, 
-        fk_salle: salle.id, 
+        fk_prof: professeur.id,
       });
     }
 
@@ -161,10 +153,6 @@ exports.listEleves = async (req, res, next) => {
             {
               model: Professeur,
               attributes: ['nom', 'prenom'],
-            },
-            {
-              model: Salle,
-              attributes: ['libelle'],
             },
           ],
         },
@@ -361,67 +349,71 @@ exports.deleteEleve = async (req, res, next) => {
 
 exports.importEleves = async (filePath) => {
   try {
-      const fileStream = fs.createReadStream(filePath);
-      const rl = readline.createInterface({ input: fileStream, crlfDelay: Infinity });
+    const fileStream = fs.createReadStream(filePath);
+    const rl = readline.createInterface({ input: fileStream, crlfDelay: Infinity });
 
-      // Déterminer l'année en cours
-      const currentYear = new Date().getFullYear();
-      const nextYear = currentYear + 1;
-      const currentYearLabel = `${currentYear}-${nextYear}`;
+    let isHeader = true;
 
-      // Vérifier ou créer l'année en cours dans la table "Annee"
-      const [currentYearEntry] = await Annee.findOrCreate({
-          where: { libelle: currentYearLabel },
-      });
+    for await (const line of rl) {
+      const row = line.split(',');
 
-      let isHeader = true;
-
-      for await (const line of rl) {
-          const row = line.split(',');
-
-          if (isHeader) {
-              isHeader = false; // Ignorer la ligne d'en-tête
-              continue;
-          }
-
-          const [niveau, nomEleve, prenomEleve, dateNaissance, nomProfesseur] = row.map((col) =>
-              col.trim()
-          );
-
-          const [nomProf, prenomProf] = nomProfesseur.split(' ');
-
-          // Vérifier ou créer la classe
-          const [classe] = await Classe.findOrCreate({
-              where: { libelle: niveau },
-          });
-
-          // Vérifier ou créer le professeur
-          const [professeur] = await Professeur.findOrCreate({
-              where: { nom: nomProf, prenom: prenomProf },
-          });
-
-          // Associer la classe au professeur (si nécessaire)
-          if (!classe.fk_prof) {
-              classe.fk_prof = professeur.id;
-              await classe.save();
-          }
-
-          // Créer l'élève avec les clés étrangères associées
-          await Eleve.create({
-              nom: nomEleve,
-              prenom: prenomEleve,
-              date_naissance: new Date(dateNaissance),
-              fk_classe: classe.id,
-              fk_annee: currentYearEntry.id,
-              redouble: false, 
-          });
+      if (isHeader) {
+        isHeader = false; // Ignorer la ligne d'en-tête
+        continue;
       }
 
-      console.log('Importation réussie.');
+      const [niveau, nomEleve, prenomEleve, dateNaissance, nomProfesseur] = row.map((col) => col.trim());
+
+      // Calculer l'année d'inscription basée sur l'âge de l'élève (3 ans avant le 4 septembre)
+      const naissanceDate = new Date(dateNaissance);
+      const yearWhenThree = naissanceDate.getFullYear() + 3;
+      const ageCutoffDate = new Date(yearWhenThree, 8, 4); // 4 septembre de l'année où il a 3 ans
+      const inscriptionYear = ageCutoffDate > new Date() ? yearWhenThree : new Date().getFullYear();
+
+      const anneeScolaireLabel = `${inscriptionYear}-${inscriptionYear + 1}`;
+
+      // Vérifier ou créer l'année scolaire
+      const [anneeScolaire] = await Annee.findOrCreate({
+        where: { libelle: anneeScolaireLabel },
+      });
+
+      // Vérifier ou créer le professeur
+      const [nomProf, prenomProf] = nomProfesseur.split(' ');
+      const [professeur] = await Professeur.findOrCreate({
+        where: { nom: nomProf, prenom: prenomProf },
+      });
+
+
+      // Vérifier ou créer la classe
+      const [classe] = await Classe.findOrCreate({
+        where: { libelle: niveau },
+        defaults: { fk_prof: professeur.id},
+      });
+
+      // Si la classe existe mais n'a pas encore de professeur ou de salle, les assigner
+      if (!classe.fk_prof) {
+        classe.fk_prof = professeur.id;
+        await classe.save();
+      }
+
+      // Créer l'élève avec les clés étrangères associées
+      await Eleve.create({
+        nom: nomEleve,
+        prenom: prenomEleve,
+        date_naissance: naissanceDate,
+        fk_classe: classe.id,
+        fk_annee: anneeScolaire.id,
+        redouble: false, // Par défaut
+      });
+    }
+
+    console.log('Importation réussie.');
   } catch (error) {
-      console.error("Erreur lors de l'importation des élèves :", error);
+    console.error('Erreur lors de l\'importation des élèves :', error);
   }
 };
+
+
 
 
 

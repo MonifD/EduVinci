@@ -12,18 +12,6 @@ const sequelize = new Sequelize({
   logging: false,
 });
 
-// Table Salle
-const Salle = sequelize.define('Salle', {
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  },
-  libelle: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-});
 
 // Table Professeur
 const Professeur = sequelize.define('Professeur', {
@@ -38,12 +26,6 @@ const Professeur = sequelize.define('Professeur', {
   },
   prenom: {
     type: DataTypes.STRING,
-    allowNull: false,
-  },
-  genre: {
-    type: DataTypes.ENUM('M.'
-                        ,'Mme.'
-                        ,'Mlle.'),
     allowNull: false,
   },
 });
@@ -72,10 +54,6 @@ const Classe = sequelize.define('Classe', {
     allowNull: false,
   },
   fk_prof: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  fk_salle: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
@@ -188,7 +166,6 @@ const Archive = sequelize.define('Archive', {
 
 // Associations
 Classe.belongsTo(Professeur, { foreignKey: 'fk_prof' });
-Classe.belongsTo(Salle, { foreignKey: 'fk_salle' });
 Eleve.belongsTo(Classe, { foreignKey: 'fk_classe' });
 Eleve.belongsTo(Annee, { foreignKey: 'fk_annee' });
 
@@ -199,4 +176,4 @@ User.prototype.generateJWT = async function () {
   return authToken;
 };
 
-module.exports = { sequelize, Salle, Professeur, Annee, Classe, Eleve, Archive, User };
+module.exports = { sequelize, Professeur, Annee, Classe, Eleve, Archive, User };
