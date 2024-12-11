@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controllers = require('../Controllers/Controllers');
+const controllers = require('../Controllers/elevesControllers');
 
 // Route pour la page d'accueil
 router.get('/', (req, res) => {

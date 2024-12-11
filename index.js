@@ -9,7 +9,7 @@ const { testRelations } = require('./src/data/dataInsert')
 const app = express();
 const port = 3000;
 
-const routes = require('./src/Routes/routes');
+const routes = require('./src/Routes/elevesRouters');
 const authRouter = require('./src/Routes/authRouters')
 
 
