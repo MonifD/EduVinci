@@ -38,6 +38,7 @@ router.get('/liste_eleves', async (req, res) => {
     }
 });
 
+
 // Route pour afficher le formulaire d'inscription
 router.get('/inscription', async (req, res) => {
     try {
