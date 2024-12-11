@@ -282,7 +282,7 @@ exports.setRedoublement = async (req, res, next) => {
     }
 
     // Mise à jour de l'état de redoublement de l'élève
-    eleve.redouble = true;
+    eleve.redouble = !eleve.redouble;
     await eleve.save();
 
     return res.status(200).json({
@@ -293,6 +293,69 @@ exports.setRedoublement = async (req, res, next) => {
     console.error("Erreur lors de la mise à jour de l'état de redoublement :", error);
     return res.status(500).json({
       message: "Une erreur est survenue lors de la mise à jour de l'état de redoublement.",
+      error: error.message,
+    });
+  }
+};
+
+exports.updateEleve = async (req, res, next) => {
+  try {
+    const { id } = req.params; // Récupérer l'ID de l'élève depuis les paramètres
+    const { nom, prenom, date_naissance } = req.body; // Récupérer les données à mettre à jour
+
+    // Trouver l'élève par son ID
+    const eleve = await Eleve.findByPk(id);
+
+    if (!eleve) {
+      return res.status(404).json({
+        message: "Élève non trouvé.",
+      });
+    }
+
+    // Mettre à jour les champs spécifiés
+    if (nom) eleve.nom = nom;
+    if (prenom) eleve.prenom = prenom;
+    if (date_naissance) eleve.date_naissance = date_naissance;
+
+    // Sauvegarder les modifications
+    await eleve.save();
+
+    return res.status(200).json({
+      message: "Élève mis à jour avec succès.",
+      eleve,
+    });
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour de l'élève :", error);
+    return res.status(500).json({
+      message: "Une erreur est survenue lors de la mise à jour de l'élève.",
+      error: error.message,
+    });
+  }
+};
+
+exports.deleteEleve = async (req, res, next) => {
+  try {
+    const { id } = req.params; // Récupérer l'ID de l'élève depuis les paramètres
+
+    // Trouver l'élève par son ID
+    const eleve = await Eleve.findByPk(id);
+
+    if (!eleve) {
+      return res.status(404).json({
+        message: "Élève non trouvé.",
+      });
+    }
+
+    // Supprimer l'élève
+    await eleve.destroy();
+
+    return res.status(200).json({
+      message: "Élève supprimé avec succès.",
+    });
+  } catch (error) {
+    console.error("Erreur lors de la suppression de l'élève :", error);
+    return res.status(500).json({
+      message: "Une erreur est survenue lors de la suppression de l'élève.",
       error: error.message,
     });
   }
