@@ -13,7 +13,7 @@ const validClasses = [
   
   exports.registerEleve = async (req, res, next) => {
     try {
-      const { nom, prenom, date_naissance, annee_scolaire } = req.body; // Récupère les données envoyées dans la requête
+      const { nom, prenom, date_naissance, annee_scolaire, redouble } = req.body; // Récupère les données envoyées dans la requête
   
       // Vérifie si l'élève a au moins 3 ans avant l'année scolaire en cours (4 septembre)
       const dateNaissance = new Date(date_naissance); // Transforme la date de naissance en objet Date
@@ -46,7 +46,11 @@ const validClasses = [
       }
   
       // Calcule l'âge de l'élève pour déterminer la classe
-      const age = new Date().getFullYear() - dateNaissance.getFullYear();
+      let age = new Date().getFullYear() - dateNaissance.getFullYear();
+
+      if (redouble) {
+      age = Math.max(age - 1, 3); // Décale d'une classe en-dessous si redouble
+    }
       let classeLibelle;
       if (age === 3) {
         classeLibelle = 'Petite section';
@@ -119,18 +123,18 @@ const validClasses = [
         date_naissance: dateNaissance,
         fk_classe: classe.id,
         fk_annee: annee.id,
-        redouble: false, // Par défaut, l'élève ne redouble pas
+        redouble: !!redouble, // Par défaut, l'élève ne redouble pas
       });
   
       // Si l'élève est en redoublement, on archive son inscription précédente
-      if (req.body.redouble) {
+      if (redouble) {
         const archive = await Archive.create({
           nom: eleve.nom,
           prenom: eleve.prenom,
           date_naissance: dateNaissance,
           annee_cours: anneeScolaire,
           classe: classeLibelle,
-          professeur: 'Non attribué', // Professeur à définir
+          professeur: professeur.nom + ' ' + professeur.prenom, // Professeur à définir
           passe: false, // Si l'élève redouble, il n'a pas passé l'année précédente
         });
       }

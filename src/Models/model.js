@@ -168,8 +168,8 @@ const Archive = sequelize.define('Archive', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  annee_naissance: {
-    type: DataTypes.INTEGER,
+  date_naissance: {  
+    type: DataTypes.DATE,
     allowNull: false,
   },
   annee_cours: {

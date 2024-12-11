@@ -30,5 +30,6 @@ router.get('/liste_eleves', async (req, res) => {
 
 router.post('/inscription', controllers.registerEleve);
 router.get('/eleves', controllers.listEleves);
+router.post('/annee_suivante', controllers.anneesuivante);
 
 module.exports = router;
