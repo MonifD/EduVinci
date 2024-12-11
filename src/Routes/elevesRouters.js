@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controllers = require('../Controllers/Controllers');
-const elevesControllers = require('../Controllers/elevesControllers');
+const controllers = require('../Controllers/elevesControllers');
 const anneesControllers = require('../Controllers/anneesControllers');
 
 // Route pour la page d'accueil
@@ -48,8 +47,7 @@ router.get('/inscription', async (req, res) => {
     }
 });
 
-router.post('/inscription', elevesControllers.registerEleve);
-router.get('/eleves', controllers.listEleves);
+router.post('/inscription', controllers.registerEleve);
 
 // Route pour avancer à l'année suivante
 router.post('/annee_suivante', controllers.anneesuivante);
