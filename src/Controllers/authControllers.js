@@ -43,8 +43,10 @@ exports.register = async (req, res) => {
       // Vérifiez si l'utilisateur existe déjà
       const existingUser = await User.findOne({ where: { email } });
       if (existingUser) {
-          return res.status(409).json({ message: 'Un utilisateur avec cet email existe déjà.' });
-      }
+        return res.render('register', {
+          message: 'Erreur : Un utilisateur avec cet email existe déjà',
+
+      })}
 
       // Hachage du mot de passe
       const hashedPassword = await bcrypt.hash(password, 10);
