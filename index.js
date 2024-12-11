@@ -4,7 +4,7 @@ require('dotenv').config();
 const path = require('path');
 const { connectToDatabase, syncModels, createDatabaseIfNotExists } = require('./src/utils/database');
 
-const { testRelations } = require('./src/data/dataInsert')
+const { initializeClasses } = require('./src/data/insertClasse')
 
 const app = express();
 const port = 3000;
@@ -37,6 +37,7 @@ async function initializeDatabase() {
     await createDatabaseIfNotExists();
     await connectToDatabase(); // Connexion à la base de données
     await syncModels(); // Synchronisation des modèles
+    await initializeClasses();
   } catch (error) {
     console.error('Erreur lors de l’initialisation de la base de données :', error);
     throw error; // Stopper si l'initialisation échoue
