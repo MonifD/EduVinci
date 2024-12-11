@@ -1,0 +1,25 @@
+<%- include('index') %>
+<link rel="stylesheet" href="/css/login.css">
+<div class="register-form-container">
+    <div class="page-title">
+        <h1>Se connecter :</h1>
+    </div>
+
+    <!-- Affichage du message si il existe -->
+    <% if (typeof message !== 'undefined' && message) { %>
+        <div class="message-container">
+            <p><%= message %></p>
+        </div>
+    <% } %>
+
+    <div class="register-form">
+        <form action="/login" method="POST">
+            <label for="email">Email :</label>
+            <input name="email" type="email" required/>
+            <label for="password">Mot de passe :</label>
+            <input name="password" type="password" required/>
+
+            <input type="submit" value="Se connecter" />
+        </form>
+    </div>
+</div>

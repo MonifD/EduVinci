@@ -1,0 +1,52 @@
+.register-form {
+    width: 70rem;
+    height: 50rex;
+    background-color: #6C9BBD;
+    border-radius: 15px;
+    margin: 0 auto;
+    margin-top: 3rex;
+}
+
+.register-form form {
+    margin: 0 auto;
+    height: 100%;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.register-form label {
+    color: white;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.register-form form input, .register-form form select {
+    font-family: 'Inter', sans-serif;
+    margin-bottom: 25px;
+    height: 32px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.register-form form input[type="submit"] {
+    margin: 0 auto;
+    margin-top: 27px;
+    background-color: white;
+    color: black;
+    font-size: 18px;
+    font-weight: 600;
+    border: 2px solid black;
+    padding: 0px;
+    height: 50px;
+    width: 220px;
+    cursor: pointer;
+}
+
+.register-form-container .message-container {
+    color: white;
+    width: 80%;
+    margin: 0 auto;
+    text-align: center;
+}

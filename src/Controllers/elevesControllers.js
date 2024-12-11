@@ -93,7 +93,6 @@ exports.registerEleve = async (req, res, next) => {
       professeur = await Professeur.create({
         nom: 'Professeur Défaut',
         prenom: 'Default',
-        genre: "M",
       });
     }
 
