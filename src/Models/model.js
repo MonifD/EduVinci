@@ -199,7 +199,7 @@ Eleve.belongsTo(Annee, { foreignKey: 'fk_annee' });
 
 User.prototype.generateJWT = async function () {
   const expiresIn = '2h';
-  const authToken = jwt.sign({ id: this.id }, process.env.JWT_SECRET, { expiresIn });
+  const authToken = jwt.sign({ id: this.id, role: this.role,  }, process.env.JWT_SECRET, { expiresIn });
   this.authTokens = [...this.authTokens, { authToken }];
   await this.save();
   return authToken;
