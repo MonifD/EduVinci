@@ -13,7 +13,7 @@ const validClasses = [
   
   exports.registerEleve = async (req, res, next) => {
     try {
-      const { nom, prenom, date_naissance, annee_scolaire, redouble} = req.body; // Récupère les données envoyées dans la requête
+      const { nom, prenom, date_naissance, annee_scolaire, redouble, nb_redoublement } = req.body; // Récupère les données envoyées dans la requête
   
       // Vérifie si l'élève a au moins 3 ans avant l'année scolaire en cours (4 septembre)
       const dateNaissance = new Date(date_naissance); // Transforme la date de naissance en objet Date
@@ -21,8 +21,11 @@ const validClasses = [
   
       // Vérifie si l'élève a bien 3 ans ou plus avant la date limite
       if (dateNaissance > dateLimite) {
-        return res.status(400).json({
-          message: 'L\'élève doit avoir au moins 3 ans avant le 4 septembre de l\'année scolaire en cours.',
+        console.error('Erreur : L\'élève a moins de 3 ans.');
+        return res.render('confirmation_inscription', {
+          success: false,
+          message: 'Erreur lors de l\'inscription de l\'élève.',
+          error: 'L\'âge minimum requis est de 3 ans avant le 4 septembre.',
         });
       }
   
@@ -34,7 +37,7 @@ const validClasses = [
       // Recherche ou crée l'année scolaire
       let annee = await Annee.findOne({
         where: {
-          libelle: anneeScolaire,
+          id: anneeScolaire,
         },
       });
   
@@ -49,7 +52,7 @@ const validClasses = [
       let age = new Date().getFullYear() - dateNaissance.getFullYear();
 
       if (redouble === 'true') {
-      age = Math.max(age - 1, 3); // Décale d'une classe en-dessous si redouble
+      age = Math.max(age - nb_redoublement, 3); // Décale d'une classe en-dessous si redouble
     }
       let classeLibelle;
       if (age === 3) {
@@ -86,7 +89,6 @@ const validClasses = [
         professeur = await Professeur.create({
           nom: 'Professeur Défaut',
           prenom: 'Default',
-          genre: 'M.'
         });
       }
 
@@ -127,23 +129,10 @@ const validClasses = [
         redouble: redouble === 'false' ? 0 : 1,
       });
   
-      // Si l'élève est en redoublement, on archive son inscription précédente
-      if (redouble === 'true') {
-        const archive = await Archive.create({
-          nom: eleve.nom,
-          prenom: eleve.prenom,
-          date_naissance: dateNaissance,
-          annee_cours: anneeScolaire,
-          classe: classeLibelle,
-          professeur: professeur.nom + ' ' + professeur.prenom, // Professeur à définir
-          passe: false, // Si l'élève redouble, il n'a pas passé l'année précédente
-        });
-      }
-  
       res.render('confirmation_inscription', {
         success: true,
         message: 'Élève créé avec succès.',
-        eleve, // L'objet de l'élève si vous voulez afficher des détails
+        eleve,
       });
     
     } catch (error) {

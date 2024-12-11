@@ -1,10 +1,10 @@
 .form-container {
     width: 70rem;
-    height: 65rex;
+    height: 70rex;
     background-color: #6C9BBD;
     border-radius: 15px;
     margin: 0 auto;
-    margin-top: 6rex;
+    margin-top: 3rex;
 }
 
 .form-container form {
@@ -19,27 +19,27 @@
 .form-container label {
     color: white;
     font-weight: 700;
-    font-size: 19px;
+    font-size: 17px;
 }
 
 .form-container form input, .form-container form select {
     font-family: 'Inter', sans-serif;
     margin-bottom: 15px;
-    height: 35px;
+    height: 30px;
     padding-left: 10px;
     padding-right: 10px;
 }
 
 .form-container form input[type="submit"] {
     margin: 0 auto;
-    margin-top: 28px;
+    margin-top: 22px;
     background-color: white;
     color: black;
     font-size: 22px;
     font-weight: 600;
     border: 2px solid black;
     padding: 0px;
-    height: 60px;
+    height: 55px;
     width: 250px;
     cursor: pointer;
 }
