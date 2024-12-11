@@ -8,9 +8,9 @@ const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
 
 const validClasses = [
-    'Petite section',
-    'Moyenne section',
-    'Grande section',
+    '1ère section maternelle',
+    '2ème section maternelle',
+    '3ème section maternelle',
     'CP',
     'CE1',
     'CE2',
@@ -27,20 +27,47 @@ exports.registerEleve = async (req, res, next) => {
     const dateLimite = new Date(new Date().getFullYear() - 3, 8, 4); // 4 septembre de l'année en cours
 
     // Vérifie si l'élève a bien 3 ans ou plus avant la date limite
-    if (dateNaissance > dateLimite) {
-      console.error('Erreur : L\'élève a moins de 3 ans.');
-      return res.render('confirmation_inscription', {
-        success: false,
-        message: 'Erreur lors de l\'inscription de l\'élève.',
-        error: 'L\'âge minimum requis est de 3 ans avant le 4 septembre.',
-      });
-    }
+    let anneeScolaire;
+    let classeLibelle;
+    let age = new Date().getFullYear() - dateNaissance.getFullYear();
 
-    // Si l'utilisateur n'a pas spécifié d'année scolaire, on calcule l'année scolaire par défaut
-    let anneeScolaire = annee_scolaire === 'Automatique' ? (new Date().getMonth() >= 8
-      ? `${new Date().getFullYear()}-${new Date().getFullYear() + 1}`  // Si on est après septembre
-      : `${new Date().getFullYear() - 1}-${new Date().getFullYear()}`)  // Si avant septembre
-      : annee_scolaire;
+    // Si l'élève a moins de 3 ans, il est pré-inscrit dans l'année suivante
+    if (dateNaissance > dateLimite) {
+      // Pré-inscription dans l'année suivante
+      anneeScolaire = (new Date().getMonth() >= 8)
+        ? `${new Date().getFullYear() + 1}-${new Date().getFullYear() + 2}` // L'année scolaire suivante
+        : `${new Date().getFullYear()}-${new Date().getFullYear() + 1}`; // L'année scolaire suivante
+      classeLibelle = age === 2 ? 'Pré-inscription' : 'Classe non déterminée'; // Classe pour pré-inscription
+    } else {
+      // L'élève a 3 ans ou plus, il est inscrit dans l'année scolaire en cours
+      anneeScolaire = annee_scolaire === 'Automatique' ? (new Date().getMonth() >= 8
+        ? `${new Date().getFullYear()}-${new Date().getFullYear() + 1}` // Si on est après septembre
+        : `${new Date().getFullYear() - 1}-${new Date().getFullYear()}`)  // Si avant septembre
+        : annee_scolaire;
+
+      // Déterminer la classe en fonction de l'âge
+      if (redouble === 'true') {
+        age = Math.max(age - nb_redoublement, 3); // Décale d'une classe en-dessous si redouble
+      }
+
+      if (age === 3) {
+        classeLibelle = '1ère section maternelle';
+      } else if (age === 4) {
+        classeLibelle = '2ème section maternelle';
+      } else if (age === 5) {
+        classeLibelle = '3ème section maternelle';
+      } else if (age === 6) {
+        classeLibelle = 'CP';
+      } else if (age === 7) {
+        classeLibelle = 'CE1';
+      } else if (age === 8) {
+        classeLibelle = 'CE2';
+      } else if (age === 9) {
+        classeLibelle = 'CM1';
+      } else if (age === 10) {
+        classeLibelle = 'CM2';
+      }
+    }
 
     // Recherche ou crée l'année scolaire
     let annee = await Annee.findOne({
@@ -56,38 +83,6 @@ exports.registerEleve = async (req, res, next) => {
       });
     }
 
-    // Calcule l'âge de l'élève pour déterminer la classe
-    let age = new Date().getFullYear() - dateNaissance.getFullYear();
-
-    if (redouble === 'true') {
-    age = Math.max(age - nb_redoublement, 3); // Décale d'une classe en-dessous si redouble
-  }
-    let classeLibelle;
-    if (age === 3) {
-      classeLibelle = 'Petite section';
-    } else if (age === 4) {
-      classeLibelle = 'Moyenne section';
-    } else if (age === 5) {
-      classeLibelle = 'Grande section';
-    } else if (age === 6) {
-      classeLibelle = 'CP';
-    } else if (age === 7) {
-      classeLibelle = 'CE1';
-    } else if (age === 8) {
-      classeLibelle = 'CE2';
-    } else if (age === 9) {
-      classeLibelle = 'CM1';
-    } else if (age === 10) {
-      classeLibelle = 'CM2';
-    }
-
-    // Vérification que la classe est valide
-    if (!validClasses.includes(classeLibelle)) {
-      return res.status(400).json({
-        message: `La classe ${classeLibelle} n'est pas valide.`,
-      });
-    }
-    
     // Recherche ou crée un professeur par défaut
     let professeur = await Professeur.findOne({
       where: { nom: 'Professeur Défaut', prenom: 'Default' },
@@ -122,7 +117,7 @@ exports.registerEleve = async (req, res, next) => {
       date_naissance: dateNaissance,
       fk_classe: classe.id,
       fk_annee: annee.id,
-      redouble: redouble === 'false' ? 0 : 1,
+      redouble: redouble ,
     });
 
     res.render('confirmation_inscription', {
@@ -130,7 +125,7 @@ exports.registerEleve = async (req, res, next) => {
       message: 'Élève créé avec succès.',
       eleve,
     });
-  
+
   } catch (error) {
     console.error('Erreur lors de la création de l\'élève:', error);
     res.render('confirmation_inscription', {
@@ -196,7 +191,7 @@ exports.anneesuivante = async (req, res, next) => {
 
       // Identifier les élèves passant au collège
       const elevesToArchive = await Eleve.findAll({
-        where: { fk_classe: cm2Class.id, Redoublement: false},
+        where: { fk_classe: cm2Class.id, redouble: false},
         include: [{ model: Classe }, { model: Annee }],
         transaction,
       });
