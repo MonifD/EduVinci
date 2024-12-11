@@ -129,19 +129,6 @@ const validClasses = [
         redouble: !!redouble, // Par défaut, l'élève ne redouble pas
       });
   
-      // Si l'élève est en redoublement, on archive son inscription précédente
-      if (redouble) {
-        const archive = await Archive.create({
-          nom: eleve.nom,
-          prenom: eleve.prenom,
-          date_naissance: dateNaissance,
-          annee_cours: anneeScolaire,
-          classe: classeLibelle,
-          professeur: professeur.nom + ' ' + professeur.prenom, // Professeur à définir
-          passe: false, // Si l'élève redouble, il n'a pas passé l'année précédente
-        });
-      }
-  
       return res.status(201).json({
         message: 'Élève créé avec succès.',
         eleve,
