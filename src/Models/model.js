@@ -147,10 +147,6 @@ const User = sequelize.define('User', {
                         ,'Administrateur')
     ,allowNull: false,
   },
-  authTokens: {
-    type: DataTypes.JSON, // Stocke les tokens sous forme de tableau JSON
-    defaultValue: [],
-  },
 });
 
 // Table Archive
@@ -200,8 +196,6 @@ Eleve.belongsTo(Annee, { foreignKey: 'fk_annee' });
 User.prototype.generateJWT = async function () {
   const expiresIn = '2h';
   const authToken = jwt.sign({ id: this.id, role: this.role,  }, process.env.JWT_SECRET, { expiresIn });
-  this.authTokens = [...this.authTokens, { authToken }];
-  await this.save();
   return authToken;
 };
 

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const controllers = require('../Controllers/elevesControllers');
 const anneesControllers = require('../Controllers/anneesControllers');
+const authe = require('../middlewares/authentification')
 
 // Route pour la page d'accueil
 router.get('/', (req, res) => {
@@ -27,6 +28,7 @@ router.get('/liste_eleves', async (req, res) => {
     }
 });
 
+router.post('/inscription', controllers.registerEleve);
 router.get('/inscription', async (req, res) => {
     try {
         // Appel de la méthode du contrôleur anneesControllers
@@ -38,7 +40,6 @@ router.get('/inscription', async (req, res) => {
             };
             anneesControllers.getAllAnnees(req, mockRes);
         });
-
         // Rendu de la vue avec les années récupérées
         res.render('inscription_eleve', { annees });
     } catch (error) {
@@ -47,7 +48,7 @@ router.get('/inscription', async (req, res) => {
     }
 });
 
-router.post('/inscription', controllers.registerEleve);
+
 
 // Route pour avancer à l'année suivante
 router.post('/annee_suivante', controllers.anneesuivante);
@@ -59,6 +60,6 @@ router.put('/eleves/:id/redoublement', controllers.setRedoublement);
 router.put('/eleves/:id', controllers.updateEleve);
 
 // Route pour supprimer un élève
-router.delete('/eleves/:id', controllers.deleteEleve);
+router.delete('/eleves/:id', authe, controllers.deleteEleve);
 
 module.exports = router;
