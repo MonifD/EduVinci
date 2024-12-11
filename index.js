@@ -11,6 +11,7 @@ const port = 3000;
 
 const routes = require('./src/Routes/elevesRouters');
 const authRouter = require('./src/Routes/authRouters')
+const professeursRouter = require('./src/Routes/profRouters'); // Importer le routeur des professeurs sinon ça va pas marcher :) 
 
 
 
@@ -30,6 +31,8 @@ app.use(express.static(path.join(__dirname, 'src', 'public')));
 
 app.use('/', routes);
 app.use('/', authRouter);
+app.use('/professeurs', professeursRouter);  // ajouter la connexion avec le serveur pour les professeurs 
+
 
 // Fonction pour initialiser la base de données
 async function initializeDatabase() {
