@@ -12,21 +12,25 @@
             <ul>
                 <li><a href="/historique">Qui sommes-nous?</a></li>
                 <li><a href="/liste_eleves">Liste des élèves inscrits</a></li>
-                <li><a href="/inscription">Inscrire un élève</a></li>
-                <li class="dropdown">
+                <li id="inscription"><a href="/inscription">Inscrire un élève</a></li>
+                <li id="fin-annee" class="dropdown">
                     <a href="#" class="dropdown-toggle">Clôturer l'année ▼</a>
                     <ul class="dropdown-menu">
                         <li><a href="/liste_redoublants">Gérer les redoublements</a></li>
                         <li><a href="/annee_suivante">Passer à l'année suivante</a></li>
                     </ul>
-                </li>                <li class="dropdown">
+                </li>                
+                <li id="comptes" class="dropdown">
                     <a href="#" class="dropdown-toggle">Compte ▼</a>
                     <ul class="dropdown-menu">
-                        <li><a href="/login">Se connecter</a></li>
-                        <li><a href="/registration">Créer un compte</a></li>
+                        <li id="login-link"><a href="/login">Se connecter</a></li>
+                        <li id="signup-link"><a href="/registration">Créer un compte</a></li>
+                        <li id="logout"><a href="#" id="logout-link">Se déconnecter</a></li>
                     </ul>
                 </li>
             </ul>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+    <script src="/js/navbar.js"></script>
 </nav>
