@@ -42,6 +42,7 @@ async function initializeDatabase() {
     await connectToDatabase(); // Connexion à la base de données
     await syncModels(); // Synchronisation des modèles
     await initializeClasses();
+    await initializeProfesseurs();
   } catch (error) {
     console.error('Erreur lors de l’initialisation de la base de données :', error);
     throw error; // Stopper si l'initialisation échoue

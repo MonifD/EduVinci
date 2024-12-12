@@ -420,6 +420,14 @@ exports.importEleves = async (filePath) => {
       });
     }
 
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        console.error('Erreur lors de la suppression du fichier temporaire:', err);
+      } else {
+        console.log('Fichier temporaire supprimé avec succès.');
+      }
+    });
+    
     console.log('Importation réussie.');
   } catch (error) {
     console.error('Erreur lors de l\'importation des élèves :', error);
