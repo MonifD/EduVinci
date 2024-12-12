@@ -10,7 +10,6 @@ nav {
 .navbar-content .navbar-title {
     display: flex;
     align-items: center;
-    width: 40%;
 }
 
 .navbar-content .navbar-title img {
@@ -40,6 +39,7 @@ nav {
 
 .navbar-links li {
     margin: 0 15px;
+    position: relative;
 }
 
 .navbar-links li a {
@@ -56,4 +56,41 @@ nav {
     text-decoration: underline;
     background-color: #0C4576;
     color: white;
+}
+.dropdown .dropdown-toggle {
+    cursor: pointer;
+}
+
+.dropdown .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 150px;
+}
+
+.dropdown .dropdown-menu li {
+    margin: 0;
+}
+
+.dropdown .dropdown-menu li a {
+    padding: 10px;
+    display: block;
+    text-align: left;
+    font-size: 14px;
+    color: #333;
+    transition: background-color 0.2s;
+}
+
+.dropdown .dropdown-menu li a:hover {
+    background-color: #f0f0f0;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
 }
