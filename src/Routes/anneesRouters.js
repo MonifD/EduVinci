@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const controllers = require('../Controllers/anneesControllers');
+const authe = require('../middlewares/authentification');
+
 
 // Route pour la page d'accueil (facultatif, peut être modifié selon besoin)
 router.get('/', (req, res) => {
