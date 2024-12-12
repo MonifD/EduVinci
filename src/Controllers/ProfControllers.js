@@ -83,3 +83,38 @@ exports.deleteProfesseur = async (req, res, next) => {
     res.status(500).json({ message: 'Une erreur est survenue.', error: error.message });
   }
 };
+
+// Assignation d'un professeur à une classe
+exports.assignProfToClass = async (req, res, next) => {
+  try {
+    const { profId, classId } = req.body;
+
+    // Vérification des champs obligatoires
+    if (!profId || !classId) {
+      return res.status(400).json({ message: 'L\'ID du professeur et celui de la classe sont obligatoires.' });
+    }
+
+  // Récupération du professeur et de la classe
+  const professeur = await Professeur.findByPk(profId);
+  const classe = await Classe.findByPk(classId);
+
+  if (!professeur) {
+    return res.status(404).json({ message: 'Professeur non trouvé.' });
+  }
+
+  if (!classe) {
+    return res.status(404).json({ message: 'Classe non trouvée.' });
+  }
+
+  // Assignation du professeur à la classe
+  classe.fk_prof = professeur.id;
+  await classe.save();
+
+  res.status(200).json({
+    message: `Le professeur ${professeur.nom} ${professeur.prenom} a été assigné à la classe ${classe.libelle}.`,
+  });
+  } catch (error) {
+    console.error('Erreur lors de l\'assignation du professeur à la classe :', error);
+    res.status(500).json({ message: 'Une erreur est survenue.', error: error.message });
+  }
+};
