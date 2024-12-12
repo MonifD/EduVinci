@@ -14,6 +14,9 @@
     background-color: #6C9BBD;
     color: white;
     border: 2px solid white;
+    max-height: 600px;
+    overflow-y: auto;
+    display: block;
 }
 
 .liste-eleves-table table th {
@@ -34,4 +37,73 @@
 
 .no-eleves-message {
     color: white;
+}
+
+.filter-container {
+    display: flex;
+    align-items: center;
+    gap: 35px;
+    margin-bottom: 15px;
+}
+
+.filter-container label {
+    font-size: 22px;
+    color: white;
+}
+
+#class-filter {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    color: #333;
+    cursor: pointer;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+#class-filter:hover {
+    border-color: #888;
+    background-color: #f1f1f1;
+}
+
+#class-filter:focus {
+    border-color: #5e9ed6;
+    background-color: #ffffff;
+    outline: none;
+}
+
+#class-filter option {
+    padding: 10px;
+    font-size: 14px;
+}
+
+.liste-eleves-table table::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.liste-eleves-table table::-webkit-scrollbar-track {
+    background: #f4f4f4;
+    border-radius: 10px;
+}
+
+.liste-eleves-table table::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+    border: 2px solid #f4f4f4;
+}
+
+.liste-eleves-table table::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.liste-eleves-table table {
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f4f4f4;
+}
+
+.professeur-info {
+    color: white;
+    display: none;
 }

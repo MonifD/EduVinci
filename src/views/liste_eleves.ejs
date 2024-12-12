@@ -1,5 +1,6 @@
 <%- include('index') %>
 <link rel="stylesheet" href="/css/liste_eleves.css">
+<script src="/js/liste_eleves.js"></script> <!-- Ajout du script -->
 <div class="liste-eleves-container">
     <div class="page-title">
         <h1>Liste des élèves</h1>
@@ -12,6 +13,23 @@
             <p>Aucun élève n'est inscrit pour le moment.</p>
         </div>
         <% } %>
+        <div class="filter-container">
+            <label for="class-filter">Filtrer par classe :</label>
+            <select id="class-filter">
+                <option value="all">Toutes les classes</option>
+                <option value="1ère section maternelle">1ère section maternelle</option>
+                <option value="2ème section maternelle">2ème section maternelle</option>
+                <option value="3ème section maternelle">3ème section maternelle</option>
+                <option value="CP">CP</option>
+                <option value="CE1">CE1</option>
+                <option value="CE2">CE2</option>
+                <option value="CM1">CM1</option>
+                <option value="CM2">CM2</option>
+            </select>
+        </div>    
+        <div id="prof-info" class="professeur-info">
+            <p>Professeur : <span id="professeur-nom">Aucun professeur sélectionné</span></p>
+        </div>        
         <table>
             <thead>
                 <tr>
@@ -21,9 +39,9 @@
                     <th>Classe</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="eleves-list">
                 <% eleves.forEach(eleve => { %>
-                    <tr>
+                    <tr class="eleve-row" data-classe="<%= eleve.Classe ? eleve.Classe.libelle : 'Non assigné' %>" data-prof="<%= eleve.Classe && eleve.Classe.Professeur ? eleve.Classe.Professeur.nom + ' ' + eleve.Classe.Professeur.prenom : 'Non assigné' %>">
                         <td><p><%= eleve.nom %></p></td>
                         <td><p><%= eleve.prenom %></p></td>
                         <td id="td-center"><p><%= eleve.date_naissance.toISOString().split('T')[0] %></p></td>
