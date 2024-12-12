@@ -4,15 +4,16 @@ require('dotenv').config();
 const path = require('path');
 const { connectToDatabase, syncModels, createDatabaseIfNotExists } = require('./src/utils/database');
 
-const { initializeClasses } = require('./src/data/insertClasse')
-const { initializeProfesseurs } = require('./src/data/insertProf')
+const { initializeClasses } = require('./src/data/insertClasse');
+const { initializeProfesseurs } = require('./src/data/insertProf');
+const { initializeUsers } = require('./src/data/insertUser');
 
 const app = express();
 const port = 3000;
 
 const routes = require('./src/Routes/elevesRouters');
-const authRouter = require('./src/Routes/authRouters')
-const professeursRouter = require('./src/Routes/profRouters'); // Importer le routeur des professeurs sinon ça va pas marcher :) 
+const authRouter = require('./src/Routes/authRouters');
+const professeursRouter = require('./src/Routes/profRouters');
 
 
 
@@ -44,6 +45,7 @@ async function initializeDatabase() {
     await syncModels(); // Synchronisation des modèles
     await initializeClasses();
     await initializeProfesseurs();
+    await initializeUsers();
   } catch (error) {
     console.error('Erreur lors de l’initialisation de la base de données :', error);
     throw error; // Stopper si l'initialisation échoue
