@@ -1,11 +1,13 @@
 const { sequelize, Professeur, Annee, Classe, Eleve, Archive } = require('../Models/model');
 const fs = require('fs');
+const path = require('path');
 const readline = require('readline');
 const { Op } = require('sequelize');
 const multer = require("multer");
 
 // Configuration de multer
 const upload = multer({ dest: "uploads/" });
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
 const validClasses = [
     '1ère section maternelle',
@@ -30,6 +32,9 @@ exports.registerEleve = async (req, res, next) => {
     let anneeScolaire;
     let classeLibelle;
     let age = new Date().getFullYear() - dateNaissance.getFullYear();
+    if (age < 2){
+
+    }
 
     // Si l'élève a moins de 3 ans, il est pré-inscrit dans l'année suivante
     if (dateNaissance > dateLimite) {
@@ -422,47 +427,75 @@ exports.importEleves = async (filePath) => {
 };
 
 
-
-
-
-
-exports.exportEleves = async (filePath) => {
+exports.exportEleves = async () => {
   try {
-      const eleves = await Eleve.findAll({
-          include: [
-              {
-                  model: Classe,
-                  attributes: ['libelle'],
-                  include: [
-                      {
-                          model: Professeur,
-                          attributes: ['nom', 'prenom'],
-                      },
-                  ],
-              },
-              {
-                  model: Annee,
-                  attributes: ['libelle'],
-              },
-          ],
-      });
 
-      const header = 'Niveau,Nom Élève,Prénom Élève,Date de Naissance,Nom Professeur,Année Scolaire\n';
-      const rows = eleves.map((eleve) => {
-          const classe = eleve.Classe ? eleve.Classe.libelle : '';
-          const professeur = eleve.Classe?.Professeur
-              ? `${eleve.Classe.Professeur.nom} ${eleve.Classe.Professeur.prenom}`
-              : '';
-          const annee = eleve.Annee ? eleve.Annee.libelle : '';
-          return `${classe},${eleve.nom},${eleve.prenom},${eleve.date_naissance.toISOString().split('T')[0]},${professeur},${annee}`;
-      });
+    const exportsDir = path.resolve(__dirname, '../exports');
+    const filePath = path.join(exportsDir, 'eleves_export.csv');
+    console.log('Chemin du fichier exporté :', filePath);
+    console.log('export du fichier exporté :', exportsDir);
 
-      const fileContent = header + rows.join('\n');
-      fs.writeFileSync(filePath, fileContent);
+    // Vérifier si le dossier `exports` existe, sinon le créer
+    if (!fs.existsSync(exportsDir)) {
+      fs.mkdirSync(exportsDir, { recursive: true });
+      console.log("dans la condition fsdir")
+    }
 
-      console.log('Exportation réussie.');
+    // 1. Récupérer tous les élèves avec leurs relations
+    const eleves = await Eleve.findAll({
+      include: [
+        {
+          model: Classe,
+          include: [{ model: Professeur, attributes: ['nom', 'prenom'] }],
+          attributes: ['libelle'],
+        },
+        { model: Annee, attributes: ['libelle'] },
+      ],
+      attributes: ['id', 'nom', 'prenom', 'date_naissance', 'redouble'],
+    });
+
+
+    if (eleves.length === 0) {
+      throw new Error('Aucun élève trouvé à exporter.');
+    }
+
+    // 2. Créer le CSV Writer
+    const csvWriter = createCsvWriter({
+      path: filePath,
+      header: [
+        { id: 'id', title: 'ID' },
+        { id: 'nom', title: 'Nom' },
+        { id: 'prenom', title: 'Prénom' },
+        { id: 'date_naissance', title: 'Date de Naissance' },
+        { id: 'classe', title: 'Classe' },
+        { id: 'annee', title: 'Année Scolaire' },
+        { id: 'professeur', title: 'Professeur' },
+        { id: 'redouble', title: 'Redouble' },
+      ],
+    });
+
+    // 3. Formater les données pour le CSV
+    const records = eleves.map((eleve) => ({
+      id: eleve.id,
+      nom: eleve.nom,
+      prenom: eleve.prenom,
+      date_naissance: eleve.date_naissance
+        ? eleve.date_naissance.toISOString().split('T')[0]
+        : 'Non défini',
+      classe: eleve.Classe ? eleve.Classe.libelle : 'Non défini',
+      annee: eleve.Annee ? eleve.Annee.libelle : 'Non définie',
+      professeur: eleve.Classe?.Professeur
+        ? `${eleve.Classe.Professeur.nom} ${eleve.Classe.Professeur.prenom}`
+        : 'Non défini',
+      redouble: eleve.redouble ? 'Oui' : 'Non',
+    }));
+    // 4. Écrire les données dans le fichier CSV
+    await csvWriter.writeRecords(records);
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    console.log('Exportation des élèves réussie.');
   } catch (error) {
-      console.error("Erreur lors de l'exportation des élèves :", error);
+    console.error('Erreur lors de l\'exportation des élèves :', error);
+    throw error; // Propager l'erreur pour qu'elle soit gérée dans le routeur
   }
 };
-

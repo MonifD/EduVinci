@@ -10,6 +10,7 @@ const router = express.Router();
 // Configurer multer pour le téléchargement de fichiers
 const upload = multer({ dest: "src/uploads/" });
 
+
 // Route pour la page d'accueil
 router.get('/', (req, res) => {
     res.render('index', {});
@@ -65,7 +66,7 @@ router.post('/inscription', controllers.registerEleve);
 router.post('/annee_suivante', controllers.anneeSuivante);
 
 // Route pour passer un élève en redoublement
-router.put('/eleves/:id/redoublement', controllers.setRedoublement);
+router.put('/eleves/redoublement/:id', controllers.setRedoublement);
 
 // Route pour modifier un élève
 router.put('/eleves/:id', controllers.updateEleve);
@@ -100,13 +101,28 @@ router.post('/import', upload.single("file"), async (req, res) => {
 // Route pour exporter les élèves vers un fichier CSV
 router.get('/export', async (req, res) => {
     try {
-        const filePath = path.resolve('./exports/eleves_export.csv');
-        await controllers.exportEleves(filePath);
-        res.download(filePath);
+      const exportsDir = path.resolve(__dirname, '../exports');
+      const filePath = path.join(exportsDir, 'eleves_export.csv');
+  
+      await controllers.exportEleves();
+  
+      // Fournir le chemin du fichier à télécharger
+      res.download(filePath, 'eleves_export.csv', (err) => {
+        if (err) {
+          console.error('Erreur lors du téléchargement du fichier :', err);
+          res.status(500).json({
+            message: 'Une erreur est survenue lors du téléchargement du fichier.',
+            error: err.message,
+          });
+        }
+      });
     } catch (error) {
-        console.error('Erreur lors de l\'exportation des élèves :', error);
-        res.status(500).json({ message: 'Une erreur est survenue lors de l\'exportation des élèves.', error: error.message });
+      console.error('Erreur lors de l\'exportation des élèves :', error);
+      res.status(500).json({
+        message: 'Une erreur est survenue lors de l\'exportation des élèves.',
+        error: error.message,
+      });
     }
-});
-
+  });
+  
 module.exports = router;
