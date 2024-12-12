@@ -1,0 +1,39 @@
+<%- include('index') %>
+<link rel="stylesheet" href="/css/register.css">
+<div class="register-form-container">
+    <div class="page-title">
+        <h1>Création d'un compte</h1>
+    </div>
+
+    <!-- Affichage du message si il existe -->
+    <% if (typeof message !== 'undefined' && message) { %>
+        <div class="message-container">
+            <p><%= message %></p>
+        </div>
+    <% } %>
+
+    <div class="register-form">
+        <form action="/registration" method="POST">
+            <label for="nom">Nom :</label>
+            <input name="nom" type="text" required/>
+            <label for="prenom">Prénom :</label>
+            <input name="prenom" type="text" required/>
+            <label for="email">Email :</label>
+            <input name="email" type="email" required/>
+            <label for="password">Mot de passe :</label>
+            <input name="password" type="password" required/>
+            <label for="confirm_password">Confirmer le mot de passe :</label>
+            <input name="confirm_password" type="password" required/>
+            <label for="role">Rôle :</label>
+            <select name="role" required>
+                <option value="Maire">Maire</option>
+                <option value="Directrice">Directrice</option>
+                <option value="Professeur">Professeur</option>
+                <option value="Administrateur">Administrateur</option>
+            </select>
+
+            <input type="submit" value="Créer le compte" />
+        </form>
+    </div>
+</div>
+<script src="/js/register.js"></script>
