@@ -1,34 +1,27 @@
 <%- include('index') %>
-<link rel="stylesheet" href="../public/css/assign_prof.css">
+<link rel="stylesheet" href="/css/assign_prof.css">
 <div class="assign-prof-container">
     <div class="page-title">
         <h1>Assigner un professeur à une classe :</h1>
     </div>
     <div class="assign-prof">
-        <% if (typeof message !== 'undefined' && message) { %>
-            <div class="success-message">
-                <h2><%= message %></h2>
-            </div>
-            <button onclick="window.location.href='/'" class="btn-retour">Retourner à l'accueil</button>
-        <% } else { %>
-            <form id="assign-prof-form" action="/professeurs/assigne" method="POST">
-                <label for="profId">Professeur :</label>
-                <select name="profId" id="profId" required>
-                    <% professeurs.forEach(professeur => { %>
-                        <option value="<%= professeur.id %>"><%= professeur.nom %> <%= professeur.prenom %></option>
-                    <% }); %>
-                </select>
+        <form id="assign-prof-form" action="/professeurs/assigne" method="POST">
+            <label for="profId">Professeur :</label>
+            <select name="profId" id="profId" required>
+                <% professeurs.forEach(professeur => { %>
+                    <option value="<%= professeur.id %>"><%= professeur.nom %> <%= professeur.prenom %></option>
+                <% }); %>
+            </select>
 
-                <label for="classId">Classe :</label>
-                <select name="classId" id="classId" required>
-                    <% classes.forEach(classe => { %>
-                        <option value="<%= classe.id %>"><%= classe.libelle %></option>
-                    <% }); %>
-                </select>
+            <label for="classId">Classe :</label>
+            <select name="classId" id="classId" required>
+                <% classes.forEach(classe => { %>
+                    <option value="<%= classe.id %>"><%= classe.libelle %></option>
+                <% }); %>
+            </select>
 
-                <input type="submit" value="Assigner le professeur à la classe" />
-            </form>
-            <script src="../public/js/assign_prof.js"></script>
-        <% } %>
+            <input type="submit" value="Assigner" />
+        </form>
     </div>
 </div>
+<script src="/js/assign_prof.js"></script>

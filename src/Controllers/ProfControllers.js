@@ -109,9 +109,7 @@ exports.assignProfToClass = async (req, res, next) => {
     classe.fk_prof = professeur.id;
     await classe.save();
 
-    res.status(200).json({
-      message: `Le professeur ${professeur.nom} ${professeur.prenom} a été assigné à la classe ${classe.libelle}.`,
-    });
+    res.redirect('/assignerProf');
   } catch (error) {
     console.error('Erreur lors de l\'assignation du professeur à la classe :', error);
     res.status(500).json({ message: 'Une erreur est survenue.', error: error.message });
