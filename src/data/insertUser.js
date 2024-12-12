@@ -1,5 +1,6 @@
 const { sequelize, User } = require('../Models/model'); // Import des modèles nécessaires
 const bcrypt = require('bcrypt');
+require('dotenv').config();
 
 async function initializeUsers() {
   try {
@@ -8,7 +9,7 @@ async function initializeUsers() {
 
     // Liste des utilisateurs à insérer
     const users = [
-      { nom: 'admin', prenom: 'admin', email: "admin@gmail.fr", password: "pass1234", role: 'Maire' },
+      { nom: 'admin', prenom: 'admin', email: "admin@gmail.fr", password: process.env.MDP_ADMIN, role: 'Maire' },
     ];
 
     for (const user of users) {
