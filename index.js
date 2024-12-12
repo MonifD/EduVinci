@@ -32,7 +32,7 @@ app.use(express.static(path.join(__dirname, 'src', 'public')));
 
 app.use('/', routes);
 app.use('/', authRouter);
-app.use('/professeurs', professeursRouter);  // ajouter la connexion avec le serveur pour les professeurs 
+app.use('/', professeursRouter);  // ajouter la connexion avec le serveur pour les professeurs 
 
 
 // Fonction pour initialiser la base de données
