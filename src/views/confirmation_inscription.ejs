@@ -12,7 +12,9 @@
     <% } else { %>
         <div class="error-message">
             <h1><%= message %></h1>
-            <p>Détails de l'erreur : <%= error %></p>
+            <% if (typeof error !== 'undefined') { %>
+                <p>Détails de l'erreur : <%= error %></p>
+            <% } %>
         </div>
     <% } %>
     <button onclick="window.location.href='/liste_eleves'" class="btn-retour">Retourner à la liste des élèves</a>

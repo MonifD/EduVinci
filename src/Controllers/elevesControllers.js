@@ -4,6 +4,7 @@ const path = require('path');
 const readline = require('readline');
 const { Op } = require('sequelize');
 const multer = require("multer");
+const { error } = require('console');
 
 // Configuration de multer
 const upload = multer({ dest: "uploads/" });
@@ -28,22 +29,43 @@ exports.registerEleve = async (req, res, next) => {
     const dateNaissance = new Date(date_naissance); // Transforme la date de naissance en objet Date
     const dateLimite = new Date(new Date().getFullYear() - 3, 8, 4); // 4 septembre de l'année en cours
 
+    let age = new Date().getFullYear() - dateNaissance.getFullYear();
+
+    if (new Date().getMonth() < dateNaissance.getMonth() || 
+        (new Date().getMonth() === dateNaissance.getMonth() && new Date().getDate() < dateNaissance.getDate())) {
+      age--;
+    }
+
+    if (age < 2){
+      res.render('confirmation_inscription', {
+        success: false,
+        message: 'Âge insuffisant. L\'élève doit avoir au moins 2 ans pour être pré-inscrit.',
+      });
+      return;
+    }
+
+
     // Vérifie si l'élève a bien 3 ans ou plus avant la date limite
     let anneeScolaire;
     let classeLibelle;
-    let age = new Date().getFullYear() - dateNaissance.getFullYear();
-    if (age < 2){
-
-    }
-
+    
     // Si l'élève a moins de 3 ans, il est pré-inscrit dans l'année suivante
     if (dateNaissance > dateLimite) {
       // Pré-inscription dans l'année suivante
       anneeScolaire = (new Date().getMonth() >= 8)
         ? `${new Date().getFullYear() + 1}-${new Date().getFullYear() + 2}` // L'année scolaire suivante
         : `${new Date().getFullYear()}-${new Date().getFullYear() + 1}`; // L'année scolaire suivante
-      classeLibelle = age === 2 ? 'Pré-inscription' : 'Classe non déterminée'; // Classe pour pré-inscription
-    } else {
+        if (age === 2) {
+          classeLibelle = 'Pré-inscription'; // Valide pour les pré-inscrits
+        } else {
+          res.render('confirmation_inscription', {
+            success: false,
+            message: 'Âge insuffisant pour être pré-inscrit.',
+            error: error.message,
+          });
+          return;
+        }
+      } else {
       // L'élève a 3 ans ou plus, il est inscrit dans l'année scolaire en cours
       anneeScolaire = annee_scolaire === 'Automatique' ? (new Date().getMonth() >= 8
         ? `${new Date().getFullYear()}-${new Date().getFullYear() + 1}` // Si on est après septembre
