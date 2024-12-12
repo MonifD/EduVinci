@@ -117,3 +117,17 @@ exports.assignProfToClass = async (req, res, next) => {
     res.status(500).json({ message: 'Une erreur est survenue.', error: error.message });
   }
 };
+
+
+exports.findAllClasses = async (req, res, next) => {
+  try {
+    const classes = await Classe.findAll({
+      attributes: ['id', 'libelle'], // Attributs de la classe
+    });
+
+    res.status(200).json(classes);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des classes :', error);
+    res.status(500).json({ message: 'Une erreur est survenue.', error: error.message });
+  }
+};
