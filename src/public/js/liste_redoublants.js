@@ -77,7 +77,7 @@ classFilter.addEventListener('change', (event) => {
 // Fonction pour envoyer une requête PUT
 async function toggleRedoublement(id) {
     try {
-        const response = await fetch(`/eleves/${id}/redoublement`, {
+        const response = await fetch(`/eleves/redoublement/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
         });
