@@ -3,14 +3,22 @@
 <div class="annee-suivante-container">
     <div class="page-title">
         <h1>Clôturer l'année :</h1>
-    </div>
+    </div>    
     <div class="annee-suivante">
-        <p>Avant de clôturer l'année, veuillez vérifier que tous les élèves redoublants ont été enregistrés dans 
-            <a href="/liste_redoublants">Gérer les redoublements</a>
-        .</p>
-        <form id="form-cloture" action="/annee_suivante" method="POST">
-            <input type="submit" value="Clôturer l'année et passer à l'année suivante" />
-        </form>
+        <% if (typeof message !== 'undefined' && message) { %>
+            <div class="success-message">
+                <h2><%= message %></h2>
+            </div>        
+            <button onclick="window.location.href='/'" class="btn-retour">Retourner à l'accueil</a>
+
+        <% } else { %>
+            <p>Avant de clôturer l'année, veuillez vérifier que tous les élèves redoublants ont été enregistrés dans 
+                <a href="/liste_redoublants">Gérer les redoublements</a>
+            .</p>
+            <form id="form-cloture" action="/annee_suivante" method="POST">
+                <input type="submit" value="Clôturer l'année et passer à l'année suivante" />
+            </form>
+            <script src="/js/annee_suivante.js"></script>
+        <% } %>
     </div>
 </div>
-<script src="/js/annee_suivante.js"></script>

@@ -32,3 +32,22 @@
     cursor: pointer;
     text-wrap: wrap;
 }
+
+.success-message {
+    color: white;
+}
+
+.annee-suivante button {
+    font-family: 'Inter', sans-serif;
+    margin: 0 auto;
+    margin-top: 28px;
+    background-color: white;
+    color: black;
+    font-size: 17px;
+    font-weight: 500;
+    border: 2px solid black;
+    padding: 0px;
+    height: 60px;
+    width: 300px;
+    cursor: pointer;
+}
