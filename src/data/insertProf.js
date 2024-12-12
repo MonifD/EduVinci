@@ -7,14 +7,14 @@ async function initializeProfesseurs() {
 
     // Liste des professeurs à insérer
     const professeursToInsert = [
-      { genre: 'M.', nom: 'Jean', prenom: 'Dupont' },
-      { genre: 'Mme.', nom: 'Claire', prenom: 'Martin' },
-      { genre: 'M.', nom: 'Paul', prenom: 'Lefevre' },
-      { genre: 'Mlle.', nom: 'Sophie', prenom: 'Bernard' },
-      { genre: 'M.', nom: 'Thierry', prenom: 'Moreau' },
-      { genre: 'Mme.', nom: 'Isabelle', prenom: 'Dufresne' },
-      { genre: 'M.', nom: 'François', prenom: 'Lemoine' },
-      { genre: 'Mme.', nom: 'Catherine', prenom: 'Dubois' },
+      { nom: 'Jean', prenom: 'Dupont' },
+      { nom: 'Claire', prenom: 'Martin' },
+      { nom: 'Paul', prenom: 'Lefevre' },
+      { nom: 'Sophie', prenom: 'Bernard' },
+      { nom: 'Thierry', prenom: 'Moreau' },
+      { nom: 'Isabelle', prenom: 'Dufresne' },
+      { nom: 'François', prenom: 'Lemoine' },
+      { nom: 'Catherine', prenom: 'Dubois' },
     ];
 
     // Parcourir la liste et utiliser `findOrCreate` pour chaque professeur
@@ -23,9 +23,6 @@ async function initializeProfesseurs() {
         where: {
           nom: professeur.nom,
           prenom: professeur.prenom,
-        },
-        defaults: {
-          genre: professeur.genre,
         },
       });
     }
