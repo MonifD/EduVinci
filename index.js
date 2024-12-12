@@ -31,6 +31,7 @@ app.use(express.static(path.join(__dirname, 'src', 'public')));
 
 
 app.use('/', routes);
+app.use('/historique', routes); // ajouter avec les routes de l'histoire du groupe scolaire
 app.use('/', authRouter);
 app.use('/professeurs', professeursRouter);  // ajouter la connexion avec le serveur pour les professeurs 
 
