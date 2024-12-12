@@ -5,16 +5,16 @@ const { Professeur, Classe } = require('../Models/model');
 const router = express.Router();
 
 // Routes pour gérer les professeurs
-router.post('/professeurs/create', ProfControllers.registerProfesseur);
-router.get('/professeurs/list', ProfControllers.listProfesseurs);
-router.put('/professeurs/:id', ProfControllers.updateProfesseur);
-router.delete('/professeurs/:id', ProfControllers.deleteProfesseur);
+router.post('/professeurs/create', authe, ProfControllers.registerProfesseur);
+router.get('/professeurs/list', authe, ProfControllers.listProfesseurs);
+router.put('/professeurs/:id', authe, ProfControllers.updateProfesseur);
+router.delete('/professeurs/:id', authe, ProfControllers.deleteProfesseur);
 
 // Route pour assigner un professeur à une classe
-router.post('/professeurs/assigne', ProfControllers.assignProfToClass);
+router.post('/professeurs/assigne', authe, ProfControllers.assignProfToClass);
 
 // Route pour lister les classes
-router.get('/Classes', ProfControllers.findAllClasses);
+router.get('/Classes', authe, ProfControllers.findAllClasses);
 
 // Route pour afficher le formulaire d'assignation
 router.get('/assignerProf', async (req, res) => {
