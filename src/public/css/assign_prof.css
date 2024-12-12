@@ -1,0 +1,60 @@
+.assign-prof {
+  width: 90%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.assign-prof label {
+  display: block;
+  margin-top: 15px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.assign-prof select {
+  width: 80%;
+  margin: 10px auto;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.assign-prof input[type="submit"] {
+  margin-top: 20px;
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.assign-prof input[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+.success-message {
+  color: green;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.btn-retour {
+  margin-top: 15px;
+  background-color: white;
+  color: #007bff;
+  font-size: 14px;
+  border: 1px solid #007bff;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-retour:hover {
+  background-color: #007bff;
+  color: white;
+}
