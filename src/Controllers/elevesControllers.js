@@ -252,12 +252,12 @@ exports.anneeSuivante = async (req, res, next) => {
       }
     });
 
-    return res.status(200).json({
-      message: "Le renouvellement de l'année scolaire a été effectué avec succès.",
+    return res.render('annee_suivante', {
+      message: "Le renouvellement de l'année scolaire a été effectué avec succès."
     });
   } catch (error) {
     console.error('Erreur lors du renouvellement de l\'année scolaire:', error);
-    return res.status(500).json({
+    return res.render('annee_suivante', {
       message: 'Une erreur est survenue lors du renouvellement de l\'année scolaire.',
       error: error.message,
     });

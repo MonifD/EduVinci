@@ -66,7 +66,7 @@ router.get('/inscription', async (req, res) => {
 
 // Route pour inscrire un élève
 router.post('/inscription', controllers.registerEleve);
-
+router.get('/annee_suivante', (req, res) => { res.render('annee_suivante') });
 // Route pour avancer à l'année suivante
 router.post('/annee_suivante', controllers.anneeSuivante);
 
