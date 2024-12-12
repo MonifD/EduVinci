@@ -109,4 +109,22 @@ router.get('/export', async (req, res) => {
     }
 });
 
+router.get('/liste_redoublants', async (req, res) => {
+    try {
+        const eleves = await new Promise((resolve, reject) => {
+            const mockRes = {
+                status: () => mockRes,
+                json: (data) => resolve(data),
+                send: reject,
+            };
+            controllers.listEleves(req, mockRes);
+        });
+
+        res.render('liste_redoublants', { eleves });
+    } catch (error) {
+        console.error('Erreur lors du chargement de la liste des élèves :', error);
+        res.status(500).send('Une erreur est survenue.');
+    }
+});
+
 module.exports = router;
