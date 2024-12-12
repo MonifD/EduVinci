@@ -5,6 +5,7 @@ const path = require('path');
 const { connectToDatabase, syncModels, createDatabaseIfNotExists } = require('./src/utils/database');
 
 const { initializeClasses } = require('./src/data/insertClasse')
+const { initializeProfesseurs } = require('./src/data/insertProf')
 
 const app = express();
 const port = 3000;
