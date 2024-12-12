@@ -13,12 +13,13 @@ const upload = multer({ dest: "src/uploads/" });
 
 // Route pour la page d'accueil
 router.get('/', (req, res) => {
-    res.render('index', {});
+    res.render('accueil');
 });
 
 // Route pour afficher l'histoire du groupe scolaire
 router.get('/historique', (req, res) => {
     res.render('historique'); // Rend la vue historique.ejs
+   
 });
 
 // Route pour afficher la liste des élèves dans le back
@@ -35,7 +36,7 @@ router.get('/liste_eleves', async (req, res) => {
             controllers.listEleves(req, mockRes);
         });
 
-        res.render('liste_eleves', { eleves });
+        res.render('liste_eleves', {eleves }); // changé les routes pour ne pas afficher l'image 
     } catch (error) {
         console.error('Erreur lors du chargement de la liste des élèves :', error);
         res.status(500).send('Une erreur est survenue.');

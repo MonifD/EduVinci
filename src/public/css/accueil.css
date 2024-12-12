@@ -1,0 +1,25 @@
+/* Conteneur principal */
+.background-container {
+    display: flex;
+    justify-content: center; /* Centre horizontalement */
+    align-items: center; /* Centre verticalement */
+    height: 89vh; /* Prend toute la hauteur de la fenêtre */
+    overflow: hidden; /* Cache tout débordement */
+}
+
+/* Image avec effet de flottement */
+.floating-image {
+    max-width: 50%; /* Limite la largeur de l'image */
+    height: auto; /* Conserve les proportions */
+    animation: float 3s ease-in-out infinite; /* Applique l'animation */
+}
+
+/* Animation de flottement */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0); /* Position initiale et finale */
+    }
+    50% {
+        transform: translateY(-15px); /* L'image monte légèrement */
+    }
+}
