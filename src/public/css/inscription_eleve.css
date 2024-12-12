@@ -5,6 +5,7 @@
     border-radius: 15px;
     margin: 0 auto;
     margin-top: 3rex;
+    margin-bottom: 3rex;
 }
 
 .form-container form {
@@ -44,6 +45,10 @@
     cursor: pointer;
 }
 
+#fichier {
+    display: none;
+}
+
 .form-container form .radio-group {
     display: flex;
     justify-content: space-between;
@@ -66,4 +71,69 @@
 .form-container form #redouble-years input {
     margin-left: 50px;
     width: 30px;
+}
+
+.type-inscription {
+    width: 92%;
+    margin: 0 auto;
+    color: white;
+}
+
+.type-inscription label {
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.container-mt-5 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    margin-top: 40px;
+    width: 92%;
+    color: white;
+    background-color: #6C9BBD;
+    height: 40rex;
+    width: 50rem;
+    padding: 20px;
+    border-radius: 15px;
+}
+
+.container-mt-5 form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.container-mt-5 form label {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.container-mt-5 .mb-3 {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.container-mt-5 form button[type="submit"] {
+    margin: 0 auto;
+    margin-top: 22px;
+    background-color: white;
+    color: black;
+    font-size: 22px;
+    font-weight: 600;
+    border: 2px solid black;
+    padding: 0px;
+    height: 55px;
+    width: 250px;
+    cursor: pointer;
+}
+
+.container-mt-5 #result {
+    margin-top: 15px;
+    font-weight: 700;
+    color: lightgreen;
 }

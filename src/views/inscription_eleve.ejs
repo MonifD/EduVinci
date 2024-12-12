@@ -5,41 +5,68 @@
     <div class="page-title">
         <h1>Inscription d'un nouvel élève</h1>
     </div>
-    <div class="form-container">
-        <form action="/inscription" method="POST">
-            <label for="nom">Nom :</label>
-            <input name="nom" type="text" required placeholder="Saisir un nom...">
-            <label for="prenom">Prénom :</label>
-            <input name="prenom" type="text" required placeholder="Saisir un prénom...">
-            <label for="date_naissance">Date de naissance :</label>
-            <input name="date_naissance" type="date" required>
-            <label for="annee_scolaire">Année scolaire :</label>
-            <select name="annee_scolaire" id="annee" required>
-                <option>Automatique</option>
-                <% if (annees && annees.length > 0) { %>
-                    <% annees.forEach(annee => { %>
-                        <option value="<%= annee.libelle %>"><%= annee.libelle %></option>
-                    <% }); %>
-                <% } %>
-            </select>
+    <div class="type-inscription">
+        <label>Type d'inscription</label>
+        <div class="radio-group">
+            <label>
+                <input type="radio" name="type-inscription" value="Manuelle" required checked> Manuelle
+            </label>
+            <label>
+                <input type="radio" name="type-inscription" value="Fichier" required> Via un fichier .csv
+            </label>
+        </div>
+    </div>
+    <div id="manuelle">
+        <div class="form-container">
+            <form action="/inscription" method="POST">
+                <label for="nom">Nom :</label>
+                <input name="nom" type="text" required placeholder="Saisir un nom...">
+                <label for="prenom">Prénom :</label>
+                <input name="prenom" type="text" required placeholder="Saisir un prénom...">
+                <label for="date_naissance">Date de naissance :</label>
+                <input name="date_naissance" type="date" required>
+                <label for="annee_scolaire">Année scolaire :</label>
+                <select name="annee_scolaire" id="annee" required>
+                    <option>Automatique</option>
+                    <% if (annees && annees.length > 0) { %>
+                        <% annees.forEach(annee => { %>
+                            <option value="<%= annee.libelle %>"><%= annee.libelle %></option>
+                        <% }); %>
+                    <% } %>
+                </select>
 
-            <div class="radio-group">
-                <label for="redouble">L'élève a-t-il déjà redoublé auparavant ?</label>
-                <div class="form-redouble">
-                    <label>
-                        <input type="radio" name="redouble" value="false" required checked> Non
-                    </label>
-                    <label>
-                        <input type="radio" name="redouble" value="true" required> Oui
-                    </label>
+                <div class="radio-group">
+                    <label for="redouble">L'élève a-t-il déjà redoublé auparavant ?</label>
+                    <div class="form-redouble">
+                        <label>
+                            <input type="radio" name="redouble" value="false" required checked> Non
+                        </label>
+                        <label>
+                            <input type="radio" name="redouble" value="true" required> Oui
+                        </label>
+                    </div>
                 </div>
-            </div>
-            <div id="redouble-years" style="display: none;">
-                <label for="nb_redoublement">Combien d'années a-t-il redoublé ?</label>
-                <input name="nb_redoublement" type="number" min="1" max="10" value="1"/>
-            </div>
+                <div id="redouble-years" style="display: none;">
+                    <label for="nb_redoublement">Combien d'années a-t-il redoublé ?</label>
+                    <input name="nb_redoublement" type="number" min="1" max="10" value="1"/>
+                </div>
 
-            <input type="submit" value="Inscrire l'élève">
-        </form>
+                <input type="submit" value="Inscrire l'élève">
+            </form>
+        </div>
+    </div>
+    <div id="fichier">
+        <div class="container-mt-5">
+            <form id="importForm" action="/import" method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="file" class="form-label">Télécharger un fichier CSV :</label>
+                    <input type="file" name="file" id="file" class="form-control" accept=".csv" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Importer</button>
+            </form>
+    
+            <div id="result" class="mt-3"></div>
+        </div>
+        <script src="/js/import_csv.js"></script>
     </div>
 </div>

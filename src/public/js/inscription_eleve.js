@@ -1,4 +1,23 @@
 document.addEventListener('DOMContentLoaded', function () {
+    const divManuelle = document.getElementById('manuelle');
+    const divFichier = document.getElementById('fichier');
+    const radioButtons = document.querySelectorAll('input[name="type-inscription"]');
+    let selectedValue = document.querySelector('input[name="type-inscription"]:checked').value;
+
+    radioButtons.forEach(button => {
+        button.addEventListener('change', function() {
+            selectedValue = document.querySelector('input[name="type-inscription"]:checked').value;
+            if (selectedValue === "Manuelle") {
+                divManuelle.style.display = 'block';
+                divFichier.style.display = 'none';
+            }
+            else {
+                divManuelle.style.display = 'none';
+                divFichier.style.display = 'block';
+            }
+        });
+    });
+
     const redoubleOui = document.querySelector('input[name="redouble"][value="true"]');
     const redoubleNon = document.querySelector('input[name="redouble"][value="false"]');
     const redoubleYears = document.getElementById('redouble-years');
