@@ -21,63 +21,44 @@ const validClasses = [
     'CM2',
   ];
   
-exports.registerEleve = async (req, res, next) => {
-  try {
-    const { nom, prenom, date_naissance, annee_scolaire, redouble, nb_redoublement } = req.body; // Récupère les données envoyées dans la requête
-
-    // Vérifie si l'élève a au moins 3 ans avant l'année scolaire en cours (4 septembre)
-    const dateNaissance = new Date(date_naissance); // Transforme la date de naissance en objet Date
-    const dateLimite = new Date(new Date().getFullYear() - 3, 8, 4); // 4 septembre de l'année en cours
-
-    let age = new Date().getFullYear() - dateNaissance.getFullYear();
-
-    if (new Date().getMonth() < dateNaissance.getMonth() || 
-        (new Date().getMonth() === dateNaissance.getMonth() && new Date().getDate() < dateNaissance.getDate())) {
-      age--;
-    }
-
-    if (age < 2){
-      res.render('confirmation_inscription', {
-        success: false,
-        message: 'Âge insuffisant. L\'élève doit avoir au moins 2 ans pour être pré-inscrit.',
-      });
-      return;
-    }
-
-
-    // Vérifie si l'élève a bien 3 ans ou plus avant la date limite
-    let anneeScolaire;
-    let classeLibelle;
-    
-    // Si l'élève a moins de 3 ans, il est pré-inscrit dans l'année suivante
-    if (dateNaissance > dateLimite) {
-      // Pré-inscription dans l'année suivante
-      anneeScolaire = (new Date().getMonth() >= 8)
-        ? `${new Date().getFullYear() + 1}-${new Date().getFullYear() + 2}` // L'année scolaire suivante
-        : `${new Date().getFullYear()}-${new Date().getFullYear() + 1}`; // L'année scolaire suivante
-        if (age === 2) {
-          classeLibelle = 'Pré-inscription'; // Valide pour les pré-inscrits
-        } else {
-          res.render('confirmation_inscription', {
-            success: false,
-            message: 'Âge insuffisant pour être pré-inscrit.',
-            error: error.message,
-          });
-          return;
-        }
-      } else {
-      // L'élève a 3 ans ou plus, il est inscrit dans l'année scolaire en cours
-      anneeScolaire = annee_scolaire === 'Automatique' ? (new Date().getMonth() >= 8
-        ? `${new Date().getFullYear()}-${new Date().getFullYear() + 1}` // Si on est après septembre
-        : `${new Date().getFullYear() - 1}-${new Date().getFullYear()}`)  // Si avant septembre
-        : annee_scolaire;
-
-      // Déterminer la classe en fonction de l'âge
-      if (redouble === 'true') {
-        age = Math.max(age - nb_redoublement, 3); // Décale d'une classe en-dessous si redouble
+  exports.registerEleve = async (req, res, next) => {
+    try {
+      const { nom, prenom, date_naissance, annee_scolaire, redouble, nb_redoublement } = req.body;
+  
+      const dateNaissance = new Date(date_naissance); // Date de naissance de l'élève
+      const aujourdHui = new Date();
+      const dateRentre = new Date(aujourdHui.getFullYear(), 8, 14); // 14 septembre de l'année actuelle
+  
+      // Vérifier si nous sommes après la rentrée
+      const apresRentre = aujourdHui > dateRentre;
+  
+      // Définir l'année scolaire en fonction de la date actuelle
+      const anneeScolaire = apresRentre
+        ? `${dateRentre.getFullYear() + 1}-${dateRentre.getFullYear() + 2}`
+        : `${dateRentre.getFullYear()}-${dateRentre.getFullYear() + 1}`;
+  
+      // Calculer l'âge à la date de la rentrée
+      let age = dateRentre.getFullYear() - dateNaissance.getFullYear();
+      if (
+        dateRentre.getMonth() < dateNaissance.getMonth() ||
+        (dateRentre.getMonth() === dateNaissance.getMonth() && dateRentre.getDate() < dateNaissance.getDate())
+      ) {
+        age--;
       }
-
-      if (age === 3) {
+  
+      // Vérifier l'éligibilité selon l'âge
+      if (age < 2) {
+        res.render('confirmation_inscription', {
+          success: false,
+          message: 'Âge insuffisant. L\'élève doit avoir au moins 2 ans pour être pré-inscrit.',
+        });
+        return;
+      }
+  
+      let classeLibelle;
+      if (age === 2) {
+        classeLibelle = 'Pré-inscription'; // Valide pour les pré-inscrits
+      } else if (age === 3) {
         classeLibelle = '1ère section maternelle';
       } else if (age === 4) {
         classeLibelle = '2ème section maternelle';
@@ -94,74 +75,69 @@ exports.registerEleve = async (req, res, next) => {
       } else if (age === 10) {
         classeLibelle = 'CM2';
       }
-    }
-
-    // Recherche ou crée l'année scolaire
-    let annee = await Annee.findOne({
-      where: {
-        libelle: anneeScolaire,
-      },
-    });
-
-    if (!annee) {
-      // Si l'année scolaire n'existe pas, on la crée
-      annee = await Annee.create({
-        libelle: anneeScolaire,
+  
+      // Recherche ou création des données nécessaires (année, professeur, classe)
+      let annee = await Annee.findOne({
+        where: {
+          libelle: anneeScolaire,
+        },
+      });
+  
+      if (!annee) {
+        annee = await Annee.create({
+          libelle: anneeScolaire,
+        });
+      }
+  
+      let professeur = await Professeur.findOne({
+        where: { nom: 'Professeur Défaut', prenom: 'Default' },
+      });
+  
+      if (!professeur) {
+        professeur = await Professeur.create({
+          nom: 'Professeur Défaut',
+          prenom: 'Default',
+        });
+      }
+  
+      let classe = await Classe.findOne({
+        where: {
+          libelle: classeLibelle,
+        },
+      });
+  
+      if (!classe) {
+        classe = await Classe.create({
+          libelle: classeLibelle,
+          fk_prof: professeur.id,
+        });
+      }
+  
+      // Créer l'élève
+      const eleve = await Eleve.create({
+        nom,
+        prenom,
+        date_naissance: dateNaissance,
+        fk_classe: classe.id,
+        fk_annee: annee.id,
+        redouble: redouble,
+      });
+  
+      res.render('confirmation_inscription', {
+        success: true,
+        message: 'Élève créé avec succès.',
+        eleve,
+      });
+    } catch (error) {
+      console.error('Erreur lors de la création de l\'élève:', error);
+      res.render('confirmation_inscription', {
+        success: false,
+        message: 'Une erreur est survenue lors de la création de l\'élève.',
+        error: error.message,
       });
     }
-
-    // Recherche ou crée un professeur par défaut
-    let professeur = await Professeur.findOne({
-      where: { nom: 'Professeur Défaut', prenom: 'Default' },
-    });
-
-    if (!professeur) {
-      professeur = await Professeur.create({
-        nom: 'Professeur Défaut',
-        prenom: 'Default',
-      });
-    }
-
-    // Recherche ou crée la classe avec son libellé
-    let classe = await Classe.findOne({
-      where: {
-        libelle: classeLibelle,
-      },
-    });
-
-    if (!classe) {
-      // Si la classe n'existe pas, on la crée
-      classe = await Classe.create({
-        libelle: classeLibelle,
-        fk_prof: professeur.id,
-      });
-    }
-
-    // Créer l'élève
-    const eleve = await Eleve.create({
-      nom,
-      prenom,
-      date_naissance: dateNaissance,
-      fk_classe: classe.id,
-      fk_annee: annee.id,
-      redouble: redouble ,
-    });
-
-    res.render('confirmation_inscription', {
-      success: true,
-      message: 'Élève créé avec succès.',
-      eleve,
-    });
-
-  } catch (error) {
-    console.error('Erreur lors de la création de l\'élève:', error);
-    res.render('confirmation_inscription', {
-      success: false,
-      message: 'Une erreur est survenue lors de la création de l\'élève.',
-      error: error.message,
-    });
-  }
-};
+  };
+  
 
 
 exports.listEleves = async (req, res, next) => {
