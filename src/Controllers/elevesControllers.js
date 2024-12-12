@@ -141,6 +141,9 @@ const validClasses = [
 
 
 exports.listEleves = async (req, res, next) => {
+  if (!['Maire', 'Directrice', 'Administrateur', 'Professeur'].includes(req.user.role)) {
+    return res.status(403).json({ message: "Accès interdit." });
+  }
   try {
     const eleves = await Eleve.findAll({
       include: [
@@ -170,6 +173,9 @@ exports.listEleves = async (req, res, next) => {
 };
 
 exports.anneeSuivante = async (req, res, next) => {
+  if (!['Maire', 'Directrice'].includes(req.user.role)) {
+    return res.status(403).json({ message: "Accès interdit." });
+  }
   try {
     const currentYear = new Date().getFullYear();
     const nextYear = currentYear + 1;
@@ -264,6 +270,9 @@ exports.anneeSuivante = async (req, res, next) => {
 
 
 exports.setRedoublement = async (req, res, next) => {
+  if (!['Maire', 'Directrice', 'Administrateur', 'Professeur'].includes(req.user.role)) {
+    return res.status(403).json({ message: "Accès interdit." });
+  }
   try {
     // Récupération de l'ID de l'élève depuis les paramètres de la requête
     const { id } = req.params;
@@ -295,6 +304,9 @@ exports.setRedoublement = async (req, res, next) => {
 };
 
 exports.updateEleve = async (req, res, next) => {
+  if (!['Maire', 'Directrice', 'Administrateur'].includes(req.user.role)) {
+    return res.status(403).json({ message: "Accès interdit." });
+  }
   try {
     const { id } = req.params; // Récupérer l'ID de l'élève depuis les paramètres
     const { nom, prenom, date_naissance } = req.body; // Récupérer les données à mettre à jour
@@ -330,6 +342,9 @@ exports.updateEleve = async (req, res, next) => {
 };
 
 exports.deleteEleve = async (req, res, next) => {
+  if (!['Maire', 'Directrice', 'Administrateur'].includes(req.user.role)) {
+    return res.status(403).json({ message: "Accès interdit." });
+  }
   try {
     const { id } = req.params; // Récupérer l'ID de l'élève depuis les paramètres
 
@@ -359,6 +374,9 @@ exports.deleteEleve = async (req, res, next) => {
 
 
 exports.importEleves = async (filePath) => {
+  if (!['Maire', 'Directrice', 'Administrateur'].includes(req.user.role)) {
+    return res.status(403).json({ message: "Accès interdit." });
+  }
   try {
     const fileStream = fs.createReadStream(filePath);
     const rl = readline.createInterface({ input: fileStream, crlfDelay: Infinity });
@@ -434,6 +452,9 @@ exports.importEleves = async (filePath) => {
 
 
 exports.exportEleves = async () => {
+  if (!['Maire', 'Directrice', 'Administrateur'].includes(req.user.role)) {
+    return res.status(403).json({ message: "Accès interdit." });
+  }
   try {
 
     const exportsDir = path.resolve(__dirname, '../exports');

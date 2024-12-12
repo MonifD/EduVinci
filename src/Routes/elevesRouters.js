@@ -69,13 +69,13 @@ router.get('/inscription', async (req, res) => {
 router.post('/inscription', controllers.registerEleve);
 router.get('/annee_suivante', (req, res) => { res.render('annee_suivante') });
 // Route pour avancer à l'année suivante
-router.post('/annee_suivante', controllers.anneeSuivante);
+router.post('/annee_suivante', authe, controllers.anneeSuivante);
 
 // Route pour passer un élève en redoublement
-router.put('/eleves/redoublement/:id', controllers.setRedoublement);
+router.put('/eleves/redoublement/:id', authe, controllers.setRedoublement);
 
 // Route pour modifier un élève
-router.put('/eleves/:id', controllers.updateEleve);
+router.put('/eleves/:id', authe, controllers.updateEleve);
 
 // Route pour supprimer un élève
 router.delete('/eleves/:id', authe, controllers.deleteEleve);

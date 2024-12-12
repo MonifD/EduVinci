@@ -29,6 +29,6 @@ router.get('/liste_annees', async (req, res) => {
 });
 
 // Route pour récupérer toutes les années (format API)
-router.get('/annees', controllers.getAllAnnees);
+router.get('/annees', authe, controllers.getAllAnnees);
 
 module.exports = router;

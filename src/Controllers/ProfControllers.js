@@ -4,6 +4,9 @@ const { Professeur, Classe } = require('../Models/model');
 
 // Création d'un professeur
 exports.registerProfesseur = async (req, res, next) => {
+  if (!['Maire', 'Directrice', 'Administrateur'].includes(req.user.role)) {
+    return res.status(403).json({ message: "Accès interdit." });
+  }
   try {
     const { nom, prenom } = req.body;
 
@@ -41,6 +44,9 @@ exports.listProfesseurs = async (req, res, next) => {
 
 // Mise à jour d'un professeur (les modifier)
 exports.updateProfesseur = async (req, res, next) => {
+  if (!['Maire', 'Directrice', 'Administrateur'].includes(req.user.role)) {
+    return res.status(403).json({ message: "Accès interdit." });
+  }
   try {
     const { id } = req.params;
     const { nom, prenom } = req.body;
@@ -66,6 +72,9 @@ exports.updateProfesseur = async (req, res, next) => {
 
 // Suppression d'un professeur
 exports.deleteProfesseur = async (req, res, next) => {
+  if (!['Maire', 'Directrice', 'Administrateur'].includes(req.user.role)) {
+    return res.status(403).json({ message: "Accès interdit." });
+  }
   try {
     const { id } = req.params;
 
@@ -85,6 +94,9 @@ exports.deleteProfesseur = async (req, res, next) => {
 };
 
 exports.assignProfToClass = async (req, res, next) => {
+  if (!['Maire', 'Directrice', 'Administrateur'].includes(req.user.role)) {
+    return res.status(403).json({ message: "Accès interdit." });
+  }
   try {
     const { profId, classId } = req.body;
 
@@ -109,9 +121,7 @@ exports.assignProfToClass = async (req, res, next) => {
     classe.fk_prof = professeur.id;
     await classe.save();
 
-    res.status(200).json({
-      message: `Le professeur ${professeur.nom} ${professeur.prenom} a été assigné à la classe ${classe.libelle}.`,
-    });
+    res.redirect('/assignerProf');
   } catch (error) {
     console.error('Erreur lors de l\'assignation du professeur à la classe :', error);
     res.status(500).json({ message: 'Une erreur est survenue.', error: error.message });
@@ -120,6 +130,9 @@ exports.assignProfToClass = async (req, res, next) => {
 
 
 exports.findAllClasses = async (req, res, next) => {
+  if (!['Maire', 'Directrice', 'Administrateur', 'Professeur'].includes(req.user.role)) {
+    return res.status(403).json({ message: "Accès interdit." });
+  }
   try {
     const classes = await Classe.findAll({
       attributes: ['id', 'libelle'], // Attributs de la classe
