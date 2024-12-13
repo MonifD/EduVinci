@@ -5,6 +5,6 @@ const authe = require('../middlewares/authentification');
 
 
 // Route pour récupérer toutes les archives
-router.get('/archives', authe, controllers.getAllArchives);
+router.get('/archives', controllers.getAllArchives);
 
 module.exports = router;

@@ -25,3 +25,14 @@ form.addEventListener('submit', async (event) => {
     alert(data.message); // Afficher un message d'erreur
   }
 });
+
+
+async function fetchWithAuth(url, options = {}) {
+  const token = localStorage.getItem('authToken');
+  console.log('Token récupéré dans fetchWithAuth:', token);
+  const headers = {
+      ...options.headers,
+      Authorization: `Bearer ${token}`,
+  };
+  return fetch(url, { ...options, headers });
+}
