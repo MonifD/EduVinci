@@ -2,9 +2,9 @@
 const { Archive } = require('../Models/model');
 
 exports.getAllArchives = async (req, res, next) => {
-  if (!['Maire', 'Directrice', 'Administrateur'].includes(req.user.role)) {
-    return res.status(403).json({ message: "Accès interdit." });
-  }
+  // if (!['Maire', 'Directrice', 'Administrateur'].includes(req.user.role)) {
+  //   return res.status(403).json({ message: "Accès interdit." });
+  // }
   try {
     // Récupérer toutes les données de la table Archive
     const archives = await Archive.findAll();
