@@ -13,7 +13,7 @@ async function createDatabaseIfNotExists() {
       username: db.user,
       password: db.password,
       host: db.host,
-      dialect: 'mysql',
+      dialect: 'postgres',  // Changer de 'mysql' à 'postgres'
       logging: false,
     });
 

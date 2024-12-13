@@ -8,7 +8,7 @@ const sequelize = new Sequelize({
   password: db.password,
   host: db.host,
   database: db.database,
-  dialect: 'mysql',
+  dialect: 'postgres',  // Changer de 'mysql' à 'postgres'
   logging: false,
 });
 
