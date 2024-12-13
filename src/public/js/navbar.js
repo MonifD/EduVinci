@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   hideElement('fin-annee');
   hideElement('signup-link');
   hideElement('logout');
+  hideElement('assigner');
 
   // Afficher les liens accessibles à tous
   document.getElementById('login-link').style.display = 'block';
@@ -31,10 +32,14 @@ document.addEventListener('DOMContentLoaded', () => {
                   document.getElementById('inscription').style.display = 'block';
                   document.getElementById('fin-annee').style.display = 'block';
                   document.getElementById('signup-link').style.display = 'block';
+                  document.getElementById('assigner').style.display = 'block';
                   break;
 
               case 'Maire':
-                  document.getElementById('inscription').style.display = 'block';
+                document.getElementById('inscription').style.display = 'block';
+                document.getElementById('fin-annee').style.display = 'block';
+                document.getElementById('signup-link').style.display = 'block';
+                document.getElementById('assigner').style.display = 'block';
                   break;
 
               case 'Professeur':
@@ -45,9 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
                   break;
 
               case 'Directrice':
-                  document.getElementById('fin-annee').style.display = 'block';
-                  document.querySelector('a[href="/liste_redoublants"]').parentElement.style.display = 'none';
-                  document.querySelector('a[href="/annee_suivante"]').parentElement.style.display = 'block';
+                document.getElementById('inscription').style.display = 'block';
+                document.getElementById('fin-annee').style.display = 'block';
+                document.getElementById('signup-link').style.display = 'block';
+                document.getElementById('assigner').style.display = 'block';
                   break;
 
               default:
