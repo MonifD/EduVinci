@@ -8,7 +8,7 @@ const sequelize = new Sequelize({
   password: db.password,
   host: db.host,
   database: db.database,
-  dialect: 'postgres',  // Changer de 'mysql' à 'postgres'
+  dialect: 'mysql',
   logging: false,
 });
 
@@ -55,7 +55,7 @@ const Classe = sequelize.define('Classe', {
   },
   fk_prof: {
     type: DataTypes.INTEGER,
-    allowNull: true,
+    allowNull: false,
   },
 });
 
