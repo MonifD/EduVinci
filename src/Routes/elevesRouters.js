@@ -23,9 +23,9 @@ router.get('/historique', (req, res) => {
 });
 
 // Route pour afficher la liste des élèves dans le back
-router.post('/liste_eleves', controllers.listEleves);
+router.post('/liste_eleves',  controllers.listEleves);
 // Route pour afficher la liste des élèves dans une vue
-router.get('/liste_eleves', async (req, res) => {
+router.get('/liste_eleves',  async (req, res) => {
     try {
         const eleves = await new Promise((resolve, reject) => {
             const mockRes = {
@@ -45,7 +45,7 @@ router.get('/liste_eleves', async (req, res) => {
 
 
 // Route pour afficher le formulaire d'inscription
-router.get('/inscription', async (req, res) => {
+router.get('/inscription',  async (req, res) => {
     try {
         // Appel de la méthode du contrôleur anneesControllers
         const annees = await new Promise((resolve, reject) => {
@@ -66,27 +66,27 @@ router.get('/inscription', async (req, res) => {
 });
 
 // Route pour inscrire un élève
-router.post('/inscription', controllers.registerEleve);
-router.get('/annee_suivante', (req, res) => { res.render('annee_suivante') });
+router.post('/inscription',  controllers.registerEleve);
+router.get('/annee_suivante',  (req, res) => { res.render('annee_suivante') });
 // Route pour avancer à l'année suivante
-router.post('/annee_suivante', authe, controllers.anneeSuivante);
+router.post('/annee_suivante',  controllers.anneeSuivante);
 
 // Route pour passer un élève en redoublement
-router.put('/eleves/redoublement/:id', authe, controllers.setRedoublement);
+router.put('/eleves/redoublement/:id',  controllers.setRedoublement);
 
 // Route pour modifier un élève
-router.put('/eleves/:id', authe, controllers.updateEleve);
+router.put('/eleves/:id',  controllers.updateEleve);
 
 // Route pour supprimer un élève
-router.delete('/eleves/:id', authe, controllers.deleteEleve);
+router.delete('/eleves/:id',  controllers.deleteEleve);
 
 // Route pour afficher le formulaire d'importation
-router.get('/import', (req, res) => {
+router.get('/import',  (req, res) => {
     res.render('import_csv', {});
 });
 
 // Route pour gérer l'importation de fichiers CSV
-router.post('/import', upload.single("file"), async (req, res) => {
+router.post('/import',  upload.single("file"), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ message: 'Aucun fichier téléchargé.' });
@@ -105,7 +105,7 @@ router.post('/import', upload.single("file"), async (req, res) => {
 });
 
 // Route pour exporter les élèves vers un fichier CSV
-router.get('/export', async (req, res) => {
+router.get('/export',  async (req, res) => {
     try {
       const exportsDir = path.resolve(__dirname, '../exports');
       const filePath = path.join(exportsDir, 'eleves_export.csv');
@@ -131,7 +131,7 @@ router.get('/export', async (req, res) => {
     }
 });
 
-router.get('/liste_redoublants', async (req, res) => {
+router.get('/liste_redoublants',  async (req, res) => {
     try {
         const eleves = await new Promise((resolve, reject) => {
             const mockRes = {
