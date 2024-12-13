@@ -9,7 +9,7 @@ async function initializeUsers() {
 
     // Liste des utilisateurs à insérer
     const users = [
-      { nom: 'admin', prenom: 'admin', email: "admin@gmail.fr", password: process.env.MDP_ADMIN, role: 'Maire' },
+      { nom: 'admin', prenom: 'admin', email: "admin@gmail.fr", password: process.env.MDP_ADMIN, role: 'Administrateur' },
     ];
 
     for (const user of users) {
