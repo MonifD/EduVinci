@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
           switch (role) {
               case 'Administrateur':
                   // Admin peut tout voir
+                  document.querySelector('a[href="/liste_eleves"]').parentElement.style.display = 'block';
                   document.getElementById('inscription').style.display = 'block';
                   document.getElementById('fin-annee').style.display = 'block';
                   document.getElementById('signup-link').style.display = 'block';
@@ -36,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   break;
 
               case 'Maire':
+                document.querySelector('a[href="/liste_eleves"]').parentElement.style.display = 'block';
                 document.getElementById('inscription').style.display = 'block';
                 document.getElementById('fin-annee').style.display = 'block';
                 document.getElementById('signup-link').style.display = 'block';
@@ -50,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   break;
 
               case 'Directrice':
+                document.querySelector('a[href="/liste_eleves"]').parentElement.style.display = 'block';
                 document.getElementById('inscription').style.display = 'block';
                 document.getElementById('fin-annee').style.display = 'block';
                 document.getElementById('signup-link').style.display = 'block';
